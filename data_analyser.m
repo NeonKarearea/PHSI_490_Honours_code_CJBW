@@ -1,5 +1,5 @@
 function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
-    start_day,end_year,end_month,end_day,n,num_grad,P)
+    start_day,end_year,end_month,end_day,n,num_grad,P,min_flux,min_avg_flux)
     %This function takes in a start and end time and will then find all relevant data from all satellites. start_year, start_month, and start_day defines when the event starts. end_year, end_month, and end_day defines when the event ends. n is the data resolution for the Omni-directional detector used, num_grad is the number of gradients used to find the cutoff flux, and P is the Omni-directional detector.
 
     %This is the names and the file prefixes for the different satellites
@@ -47,12 +47,12 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
         if k == 1
             [fluxes,L_shells,datenums,cutoff_fluxes,cutoff_L_shells,cutoff_datenums,std_in,std_out]...
                 = event_determine_true(start_date,end_date,relevant_satellite{k},...
-                n,num_grad,P);
+                n,num_grad,P,min_flux,min_avg_flux);
 
         else
             [fluxes_2,L_shells_2,datenums_2,cutoff_fluxes_2,cutoff_L_shells_2,cutoff_datenums_2,std_in_2,std_out_2]...
                 = event_determine_true(start_date,end_date,relevant_satellite{k},...
-                n,num_grad,P);
+                n,num_grad,P,min_flux,min_avg_flux);
 
             %This merges the previous data with the newly obtained data.
             fluxes = [fluxes,fluxes_2];
@@ -88,7 +88,6 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
         loc = find(non_nan_cutoff_datenums == sorted_non_nan_cutoff_datenums(i));
 
         for j = 1:length(loc)
-            nums(i+offset) = i+offset;
             sorted_fluxes{i+offset} = non_nan_fluxes{loc(j)};
             sorted_L_shells{i+offset} = non_nan_L_shells{loc(j)};
             sorted_datenums{i+offset} = non_nan_datenums{loc(j)};
@@ -105,10 +104,10 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
     
     %This will let the user know a) which satellites have been skipped and
     %b) which ones have incomplete data.
-    disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
-    disp(skipped_satellite)
-    disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
-    disp(incomplete_satellite)
+    %disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
+    %disp(skipped_satellite)
+    %disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
+    %disp(incomplete_satellite)
     
     a = sorted_fluxes;
     b = sorted_L_shells;

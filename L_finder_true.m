@@ -1,9 +1,9 @@
-function [a,b,c,d,e,f,g,h] = L_finder_true(flux,L_shell,datenum,sat_lat,sat_lon,num_grad)
+function [a,b,c,d,e,f,g,h] = L_finder_true(flux,L_shell,datenum,sat_lat,sat_lon,num_grad,min_flux,min_avg_flux)
 %This function determines the cutoff L and flux over an event. This
     %will return 6 things; the flux, L_shell, and datenum information used
     %in the determining of the cutoffs (for plotting reasons) and the
     %cutoff flux, L-shell, and datenum for each event.
-
+    
     sat_lat_plus = sat_lat(2:end);
     sat_lat_minus = sat_lat(1:end-1);
     
@@ -61,7 +61,7 @@ function [a,b,c,d,e,f,g,h] = L_finder_true(flux,L_shell,datenum,sat_lat,sat_lon,
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
         [cut_flux, cut_L, avg_std_in, avg_std_out] = alternative_cutoff_determine(L_shell_pass_directional{k},...
-            flux_pass_directional{k},m,num_grad);
+            flux_pass_directional{k},m,num_grad,min_flux,min_avg_flux);
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
         std_in(k) = avg_std_in;

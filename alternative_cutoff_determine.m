@@ -1,4 +1,4 @@
-function [a,b,c,d] = alternative_cutoff_determine(L_shell,flux,m,num_grad)
+function [a,b,c,d] = alternative_cutoff_determine(L_shell,flux,m,num_grad,min_flux,min_avg_flux)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -50,7 +50,7 @@ function [a,b,c,d] = alternative_cutoff_determine(L_shell,flux,m,num_grad)
     %This is a final catch in case the cutoff flux isn't found (This also
     %removes points below a cutoff flux value of 11 and an average flux of 
     %22 (this forms our noise floor))
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=11||avg_flux<=22
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux%||true_flux<=cut_flux||avg_flux<=cut_avg_flux
         true_flux = NaN;
         true_L = NaN;
         std_in = NaN;
