@@ -1,4 +1,4 @@
-function [a,b] = cutoff_determine(L_shell, flux, n, m)
+function [a,b] = cutoff_determine_jason(L_shell, flux, n, m)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
