@@ -104,10 +104,6 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
     
     %This will let the user know a) which satellites have been skipped and
     %b) which ones have incomplete data.
-    %disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
-    %disp(skipped_satellite)
-    %disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
-    %disp(incomplete_satellite)
     
     a = sorted_fluxes;
     b = sorted_L_shells;

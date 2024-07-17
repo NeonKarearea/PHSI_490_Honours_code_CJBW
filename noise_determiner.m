@@ -23,7 +23,7 @@ function [a,b,c] = noise_determiner
             cutoff_datenums_row = cell(1,length(cut_avg_flux));
             for k = 1:length(cut_avg_flux)
                 [~,~,~,cutoff_flux,cutoff_L_shell,cutoff_datenum]=...
-                    data_analyser(2012,01,23,2012,01,31,2,5,'P6',cut_flux(j),cut_avg_flux(k));
+                    data_analyser(2012,01,23,2012,01,31,2,i,'P6',cut_flux(j),cut_avg_flux(k));
 
                 cutoff_fluxes_row{k} = cutoff_flux;
                 cutoff_L_shells_row{k} = cutoff_L_shell;
