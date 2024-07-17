@@ -1,4 +1,4 @@
-function [a,b] = cutoff_determine(L_shell, flux, n, m)
+function [a,b] = cutoff_determine_jason(L_shell, flux, n, m)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -41,20 +41,6 @@ function [a,b] = cutoff_determine(L_shell, flux, n, m)
                         true_flux = flux(int64(val_del_flux(i)));
                         true_L = L_closest;
                         break
-                        %{
-                        avg_grad_in = grad_check(del_flux,L_shell,val_del_flux(i),-1);
-                        
-                        avg_grad_out = grad_check(del_flux,L_shell,val_del_flux(i),1);
-                        
-                        %Third Check: avg_grad_in < 0, avg_grad_out > 0
-                        if avg_grad_in < 0 && avg_grad_out > 0
-                            true_flux = flux(int64(val_del_flux(i)));
-                            true_L = L_closest;
-                            break
-                        else
-                            continue
-                        end
-                        %}
                     else
                         continue
                     end
