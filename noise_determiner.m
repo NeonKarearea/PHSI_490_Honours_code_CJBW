@@ -1,8 +1,6 @@
 function [a,b,c] = noise_determiner    
     delete(gcp('nocreate'))
     pools = parpool() %#ok<NOPRT>
-    files = {'data_analyser.m','event_determine_true.m','L_finder.m','alternative_cutoff_determine.m','grad_check'};
-    addAttachedFiles(pools,files);
 
     cut_flux = 5:1:15;
     cut_avg_flux = 10:2:30;
@@ -47,8 +45,8 @@ function [a,b,c] = noise_determiner
         end
 
         cutoff_fluxes_all_grads{i} = cutoff_fluxes;
-        cutoff_L_shells_all_grads{i} = cutoff_fluxes;
-        cutoff_datenums_all_grads{i} = cutoff_fluxes;
+        cutoff_L_shells_all_grads{i} = cutoff_L_shells;
+        cutoff_datenums_all_grads{i} = cutoff_datenums;
     end
 
     a = cutoff_fluxes_all_grads;
