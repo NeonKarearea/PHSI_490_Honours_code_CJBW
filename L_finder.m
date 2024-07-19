@@ -6,8 +6,11 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_g
     
     idx = sat_lat;
     jdx = sat_lon;
-
+    
+    %This removes the effect of the SAMA (mostly) and removes points that
+    %are clearly non-physical (i.e. negative points)
     flux(idx>=-60&idx<=10&(jdx>=270|jdx<=40)) = NaN;
+    flux(flux<0) = NaN;
 
     %This finds where the satellite passes over the equator.
     transitions = zeros(size(sat_lat_minus));
