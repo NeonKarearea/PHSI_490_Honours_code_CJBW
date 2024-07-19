@@ -36,6 +36,7 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
             incomplete_sat = incomplete_sat + 1;
             incomplete_satellite{i-skipped_sat-used_sat} = satellite_names{i};
             relevant_satellite{i-skipped_sat} = file;
+            
         else
             used_sat = used_sat + 1;
             relevant_satellite{i-skipped_sat} = file;
