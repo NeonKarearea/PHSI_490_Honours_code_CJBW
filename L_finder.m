@@ -1,16 +1,16 @@
 function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_grad)
-%This function determines the cutoff L and flux over an event. This
-    %will return 6 things; the flux, L_shell, and datenum information used
-    %in the determining of the cutoffs (for plotting reasons) and the
-    %cutoff flux, L-shell, and datenum for each event.
-
+%This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
+    
     sat_lat_plus = sat_lat(2:end);
     sat_lat_minus = sat_lat(1:end-1);
     
     idx = sat_lat;
     jdx = sat_lon;
-
+    
+    %This removes the effect of the SAMA (mostly) and removes points that
+    %are clearly non-physical (i.e. negative points)
     flux(idx>=-60&idx<=10&(jdx>=270|jdx<=40)) = NaN;
+    flux(flux<0) = NaN;
 
     %This finds where the satellite passes over the equator.
     transitions = zeros(size(sat_lat_minus));

@@ -61,5 +61,5 @@ function [a,b,c,d,e,f,g,h] = event_determine(start_date,end_date,...
     
     %Finally, we can find where the cutoffs are.
     [a,b,c,d,e,f,g,h] = L_finder(event_flux,event_L_shell,event_datenum,...
-        event_sat_lat,event_sat_lon,num_grad);
+        event_sat_lat,event_sat_lon,num_grad,min_flux,min_avg_flux);
 end

@@ -1,16 +1,17 @@
 function [a,b] = grad_check(del_flux,L_shell,i,operation,num_grad)
     if operation == 1
-        position = 1;
+        for j = 1:num_grad
+            grad(j) = (del_flux(i+(operation*j))-del_flux(i))/...
+            (L_shell(i+(operation*j))-L_shell(i));
+        end
     else
-        position = 0;
+        for j = 1:num_grad
+            grad(j) = (del_flux(i)-del_flux(i+(operation*j)))/...
+            (L_shell(i)-L_shell(i+(operation*j)));
+        end
     end
     
-    for j = 1:num_grad
-        grad(j) = (del_flux(i+(operation*j)+position)-del_flux(i+position))/...
-            (L_shell(i+(operation*j)+position)-L_shell(i+position));
-    end
-    
-    avg_grad = mean(grad,'omitnan');
+    avg_grad = median(grad,'omitnan');
     avg_std = std(grad,'omitnan');
     a = avg_grad;
     b = avg_std;

@@ -3,6 +3,7 @@ load coastlines
 satlat = sub_satellite_latitude(1:8:end);
 satlon = sub_satellite_longitude(1:8:end);
 flux_p6 = Omni_directional_P6(1:8:end);
+%Yeah this part is definitely not ready yet.
 %{
 fig = figure(1);
 hold on

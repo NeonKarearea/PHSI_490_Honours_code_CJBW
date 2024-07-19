@@ -36,6 +36,7 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
             incomplete_sat = incomplete_sat + 1;
             incomplete_satellite{i-skipped_sat-used_sat} = satellite_names{i};
             relevant_satellite{i-skipped_sat} = file;
+            
         else
             used_sat = used_sat + 1;
             relevant_satellite{i-skipped_sat} = file;
@@ -88,7 +89,6 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
         loc = find(non_nan_cutoff_datenums == sorted_non_nan_cutoff_datenums(i));
 
         for j = 1:length(loc)
-            nums(i+offset) = i+offset;
             sorted_fluxes{i+offset} = non_nan_fluxes{loc(j)};
             sorted_L_shells{i+offset} = non_nan_L_shells{loc(j)};
             sorted_datenums{i+offset} = non_nan_datenums{loc(j)};
