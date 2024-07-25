@@ -3,7 +3,7 @@ function [a,b,c] = noise_determiner
     pools = parpool() %#ok<NOPRT>
 
     cut_flux = 5:1:15;
-    cut_avg_flux = 10:2:30;
+    cut_avg_flux = 10:1:30;
     num_grad = 1:1:10;
 
     cutoff_fluxes = cell(length(cut_flux),length(cut_avg_flux));

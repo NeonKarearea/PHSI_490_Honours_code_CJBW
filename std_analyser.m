@@ -1,7 +1,7 @@
-load("values_for_10_grads.mat")
+lenny = length(cutoff_datenums_all_grads{10}{1,1});
 
-cutoff_L_shells = [cutoff_L_shells_1;cutoff_L_shells_2;cutoff_L_shells_3;cutoff_L_shells_4;cutoff_L_shells_5;cutoff_L_shells_6;cutoff_L_shells_7;cutoff_L_shells_8;cutoff_L_shells_9;cutoff_L_shells_10];
-cutoff_datenums = [cutoff_datenums_1;cutoff_datenums_2;cutoff_datenums_3;cutoff_datenums_4;cutoff_datenums_5;cutoff_datenums_6;cutoff_datenums_7;cutoff_datenums_8;cutoff_datenums_9;cutoff_datenums_10];
+cutoff_L_shells = [cutoff_L_shells_all_grads{1}{5,4};cutoff_L_shells_all_grads{2}{5,4};cutoff_L_shells_all_grads{3}{5,4};cutoff_L_shells_all_grads{4}{5,4};cutoff_L_shells_all_grads{5}{5,4};cutoff_L_shells_all_grads{6}{5,4};cutoff_L_shells_all_grads{7}{5,4};cutoff_L_shells_all_grads{8}{5,4};cutoff_L_shells_all_grads{9}{5,4};cutoff_L_shells_all_grads{10}{5,4}];
+cutoff_datenums = [cutoff_datenums_all_grads{1}{5,4};cutoff_datenums_all_grads{2}{5,4};cutoff_datenums_all_grads{3}{5,4};cutoff_datenums_all_grads{4}{5,4};cutoff_datenums_all_grads{5}{5,4};cutoff_datenums_all_grads{6}{5,4};cutoff_datenums_all_grads{7}{5,4};cutoff_datenums_all_grads{8}{5,4};cutoff_datenums_all_grads{9}{5,4};cutoff_datenums_all_grads{10}{5,4}];
 
 for i = 2:9
     mean_cutoff_L_shells((i-1),:) = mean([cutoff_L_shells(i-1,:);cutoff_L_shells(i,:);cutoff_L_shells(i+1,:)],'omitnan'); %#ok<SAGROW>
