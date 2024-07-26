@@ -1,10 +1,10 @@
 function [a,b,c] = noise_determiner    
     delete(gcp('nocreate'))
-    pools = parpool() %#ok<NOPRT>
+    pools = parpool();
 
     cut_flux = 5:1:15;
     cut_avg_flux = 10:1:30;
-    num_grad = 1:1:10;
+    num_grad = 1:1:15;
 
     cutoff_fluxes = cell(length(cut_flux),length(cut_avg_flux));
     cutoff_L_shells = cell(length(cut_flux),length(cut_avg_flux));
@@ -21,7 +21,7 @@ function [a,b,c] = noise_determiner
             cutoff_datenums_row = cell(1,length(cut_avg_flux));
             for k = 1:length(cut_avg_flux)
                 [~,~,~,cutoff_flux,cutoff_L_shell,cutoff_datenum]=...
-                    data_analyser(2012,01,23,2012,01,31,2,i,'P6',cut_flux(j),cut_avg_flux(k));
+                    data_analyser(2012,01,23,2012,01,31,2,i+4,'P6',cut_flux(j),cut_avg_flux(k));
 
                 cutoff_fluxes_row{k} = cutoff_flux;
                 cutoff_L_shells_row{k} = cutoff_L_shell;
@@ -33,11 +33,11 @@ function [a,b,c] = noise_determiner
             disp(strcat("Found the cutoffs for min_cutoff_flux = ",num2str(j+4)," for ",num2str(i)," gradients around the cutoff point."))
         end
 
-        for l = 1:11
+        for l = 1:length(cut_flux)
             cutoff_fluxes_part = cutoff_fluxes_column{l};
             cutoff_L_shells_part = cutoff_L_shells_column{l};
             cutoff_datenums_part = cutoff_datenums_column{l};
-            for m = 1:11
+            for m = 1:length(cut_avg_flux)
                 cutoff_fluxes{l,m} = cutoff_fluxes_part{m};
                 cutoff_L_shells{l,m} = cutoff_L_shells_part{m};
                 cutoff_datenums{l,m} = cutoff_datenums_part{m};
