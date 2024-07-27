@@ -1,6 +1,6 @@
 function [a,b,c] = noise_determiner    
     delete(gcp('nocreate'))
-    pools = parpool();
+    parpool();
 
     cut_flux = 5:1:15;
     cut_avg_flux = 10:1:30;
