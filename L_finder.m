@@ -19,7 +19,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_g
     end
 
     trans_loc = find(transitions);
-
+    
     %Below splits the given data into the number of passes needed
     check = 0; %This makes the first one go from one
     for i = 1:length(trans_loc)
@@ -39,10 +39,20 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_g
         flux_pass{i} = flux_pass{i}(L_shell_lower >= 2);
         datenum_pass{i} = datenum_pass{i}(L_shell_lower >= 2);
         check = 1;
+        
+        if sat_lat(trans_loc(i)) < 0
+            hemisphere(i) = 2;
+        else
+            hemisphere(i) = 0;
+        end
+        
     end
 
     %This will split the passes into entrance and exit
     for j = 1:length(L_shell_pass)
+        quadrant((2*j)-1) = hemisphere(j);
+        quadrant(2*j) = hemisphere(j) + 1;
+        
         L_shell_examine = L_shell_pass{j};
         flux_examine = flux_pass{j};
         datenum_examine = datenum_pass{j};
@@ -60,12 +70,10 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_g
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        [cut_flux, cut_L, avg_std_in, avg_std_out] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
+        [cut_flux, cut_L] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
             flux_pass_directional{k},m,num_grad);
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
-        std_in(k) = avg_std_in;
-        std_out(k) = avg_std_out;
         m = mod(m+1,2);
     end
 
@@ -86,6 +94,5 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,num_g
     d = cutoff_flux;
     e = cutoff_L;
     f = cutoff_datenum;
-    g = std_in;
-    h = std_out;
+    g = quadrant;
 end
