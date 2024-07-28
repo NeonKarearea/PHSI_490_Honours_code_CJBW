@@ -70,18 +70,12 @@ function interpolate(satellite)
             end
         end
         
-        L = event_data.McIlwain_L_value;
-        lat = event_data.sub_satellite_latitude;
-        lon = event_data.sub_satellite_longitude;
-        x = 1:length(L);
-        idxL = L ~= -999 & L ~= -1 & L ~= 100;
-        idxlat = lat ~= -999 & lat ~= -1 & lat ~= 100;
-        idxlon = lon ~= -999 & lon ~= -1 & lon ~= 100;
-        
+        MLT = event_data.fofl_magnetic_local_time;
+        x = 1:length(MLT);
+        idxMLT = MLT ~= -999 & MLT ~= -1 & MLT ~= 100;
+
         %And this interpolates the data.
-        interp_L = interp1(x(idxL),L(idxL),x,'spline');
-        interp_lat = interp1(x(idxlat),lat(idxlat),x);
-        interp_lon = interp1(x(idxlon),lon(idxlon),x);
+        interp_MLT = interp1(x(idxMLT),MLT(idxMLT),x,'spline');
         
         %Now we need to break the event_data back into the date_data.
         for n = 1:length(event)
@@ -92,20 +86,16 @@ function interpolate(satellite)
                 end_point = length(date_data.McIlwain_L_value);
                 
                 %This writes it in
-                date_data.McIlwain_L_value = (interp_L(1:end_point)');
-                date_data.sub_satellite_latitude = (interp_lat(1:end_point)');
-                date_data.sub_satellite_longitude = (interp_lon(1:end_point)');
+                date_data.fofl_magnetic_local_time = (interp_MLT(1:end_point)');
             else
                 %This gets the data
                 date_data = matfile(strcat(path,'\',event{n}));
                 date_data.Properties.Writable = true;
                 start_point =  end_point+1;
-                end_point = end_point+length(date_data.McIlwain_L_value);
+                end_point = end_point+length(date_data.fofl_magnetic_local_time);
                 
                 %This writes it in
-                date_data.McIlwain_L_value = (interp_L(start_point:end_point)');
-                date_data.sub_satellite_latitude = (interp_lat(start_point:end_point)');
-                date_data.sub_satellite_longitude = (interp_lon(start_point:end_point)');
+                date_data.fofl_magnetic_local_time = (interp_MLT(start_point:end_point)');
             end
         end        
     end

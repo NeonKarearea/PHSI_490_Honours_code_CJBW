@@ -58,8 +58,9 @@ function [a,b,c,d,e,f,g,h] = event_determine(start_date,end_date,...
     event_datenum = event_datenum(start_loc:n:end_loc);
     event_sat_lat = event.sub_satellite_latitude(start_loc:n:end_loc);
     event_sat_lon = event.sub_satellite_longitude(start_loc:n:end_loc);
+    event_MLT = event.fofl_magnetic_local_time(start_loc:n:end_loc);
     
     %Finally, we can find where the cutoffs are.
-    [a,b,c,d,e,f,g] = L_finder(event_flux,event_L_shell,event_datenum,...
-        event_sat_lat,event_sat_lon,num_grad);
+    [a,b,c,d,e,f,g,h] = L_finder(event_flux,event_L_shell,event_datenum,...
+        event_sat_lat,event_sat_lon,event_MLT,num_grad);
 end

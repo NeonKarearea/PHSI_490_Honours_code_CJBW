@@ -1,4 +1,4 @@
-function [a,b] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
+function [a,b,c] = cutoff_determine_cjbw(L_shell,flux,MLT,m,num_grad)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -18,6 +18,7 @@ function [a,b] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
     if isnan(avg_flux) == 1
         true_flux = NaN;
         true_L = NaN;
+        true_MLT = NaN;
     else
         %This will find all the points where the difference in cutoff and
         %measured flux changes sign
@@ -35,6 +36,7 @@ function [a,b] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
                 if avg_grad_in < 0 && avg_grad_out > 0
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
+                    true_MLT = MLT(int64(sign_change_loc(i)));
                     break
                 else
                     continue
@@ -49,9 +51,9 @@ function [a,b] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
     if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=9||avg_flux<=15%||true_flux<=cut_flux||avg_flux<=cut_avg_flux
         true_flux = NaN;
         true_L = NaN;
-        std_in = NaN;
-        std_out = NaN;
+        true_MLT = NaN;
     end
     a = true_flux;
     b = true_L;
+    c = true_MLT;
 end
