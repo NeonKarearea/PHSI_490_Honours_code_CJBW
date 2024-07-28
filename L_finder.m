@@ -90,7 +90,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
             cutoff_loc = find(L_shell_pass_directional{l} == cutoff_L(l),1);
             cutoff_datenum(l) = datenum_pass_directional{l}(cutoff_loc);
         else
-            cutoff_datenum(l) = NaN;
+            cutoff_datenum(l) = mean(datenum_pass_directional{l});
         end
     end
     
