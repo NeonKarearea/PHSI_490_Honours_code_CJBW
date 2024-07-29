@@ -1,4 +1,4 @@
-function [a,b,c,d] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
+function [a,b,c] = cutoff_determine_cjbw(L_shell,flux,MLT,m,num_grad)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -18,8 +18,7 @@ function [a,b,c,d] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
     if isnan(avg_flux) == 1
         true_flux = NaN;
         true_L = NaN;
-        std_in = NaN;
-        std_out = NaN;
+        true_MLT = NaN;
     else
         %This will find all the points where the difference in cutoff and
         %measured flux changes sign
@@ -32,13 +31,12 @@ function [a,b,c,d] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
             if sign_change_loc(i) <= num_grad || sign_change_loc(i) >= length(del_flux)-num_grad
                 continue
             else
-                [avg_grad_in,avg_std_in] = grad_check(abs_del_flux,L_shell,sign_change_loc(i),-1,num_grad);
-                [avg_grad_out,avg_std_out] = grad_check(abs_del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                avg_grad_in = grad_check(abs_del_flux,L_shell,sign_change_loc(i),-1,num_grad);
+                avg_grad_out = grad_check(abs_del_flux,L_shell,sign_change_loc(i),1,num_grad);
                 if avg_grad_in < 0 && avg_grad_out > 0
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
-                    std_in = avg_std_in;
-                    std_out = avg_std_out;
+                    true_MLT = MLT(int64(sign_change_loc(i)));
                     break
                 else
                     continue
@@ -50,14 +48,12 @@ function [a,b,c,d] = cutoff_determine_cjbw(L_shell,flux,m,num_grad)
     %This is a final catch in case the cutoff flux isn't found (This also
     %removes points below a cutoff flux value of 11 and an average flux of 
     %22 (this forms our noise floor))
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=10||avg_flux<=20%||true_flux<=cut_flux||avg_flux<=cut_avg_flux
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux
         true_flux = NaN;
         true_L = NaN;
-        std_in = NaN;
-        std_out = NaN;
+        true_MLT = NaN;
     end
     a = true_flux;
     b = true_L;
-    c = std_in;
-    d = std_out;
+    c = true_MLT;
 end
