@@ -96,11 +96,11 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
     
     for m = 1:length(cutoff_MLTs)
         if cutoff_MLTs(m) > 90 && cutoff_MLTs(m) < 270
-            sunside(m) = 0;
+            sunside(m) = 1;
         elseif isnan(cutoff_MLTs(m))
             sunside(m) = NaN;
         else
-            sunside(m) = 1;
+            sunside(m) = 0;
         end
     end
 
