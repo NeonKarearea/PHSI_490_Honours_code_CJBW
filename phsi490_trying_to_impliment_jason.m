@@ -35,8 +35,8 @@ pf_for = Omni_directional_P6(46201:8:46697);
 pf_back = Omni_directional_P6(47119:8:48095);
 
 %Ths finds the averages and then the cutoff flux
-[for_flux, for_L] = cutoff_determine(McIlwain_forward,pf_for,0.3,0);
-[back_flux, back_L] = cutoff_determine(McIlwain_backward,pf_back,0.3,1);
+[for_flux, for_L] = cutoff_determine_jason(McIlwain_forward,pf_for,0.3,0);
+[back_flux, back_L] = cutoff_determine_jason(McIlwain_backward,pf_back,0.3,1);
 
 invar_lat_for = (acosd(sqrt(1/for_L)));
 invar_lat_back = (acosd(sqrt(1/back_L)));
@@ -51,13 +51,13 @@ hold on
 plot(McIlwain_forward,pf_for,'b-')
 plot(McIlwain_backward,pf_back,'r-')
 plot(0:1:20,for_flux*ones(1,21),'b--')
-text(0,double(for_flux),[fforlabel,''])
 plot(0:1:20,back_flux*ones(1,21),'r--')
-text(0,double(back_flux),['',fbacklabel])
 plot(for_L*ones(1,2001),0:1:2000,'b-.')
-text(double(for_L),1900,lforlabel)
 plot(back_L*ones(1,2001),0:1:2000,'r-.')
-text(double(back_L)-2.3,1900,lbacklabel)
+text(fforlabel)
+text(fbacklabel)
+text(lforlabel)
+text(lbacklabel)
 set(gca,'FontSize',20,'FontWeight','demi')
 title("The polar pass up to L=20 against flux");
 xlabel("L-shell (L)");
