@@ -13,8 +13,8 @@ pf_for = Flux(1:turning_point);
 pf_back = Flux(turning_point+1:end);
 
 %Ths finds the averages and then the cutoff flux
-[for_flux, for_L] = cutoff_determine(McIlwain_forward,pf_for,0.3,0);
-[back_flux, back_L] = cutoff_determine(McIlwain_backward,pf_back,0.3,1);
+[for_flux, for_L] = cutoff_determine_cjbw(McIlwain_forward,pf_for,0,5);
+[back_flux, back_L] = cutoff_determine_cjbw(McIlwain_backward,pf_back,1,5);
 
 fforlabel = strcat("Flux cutoff = ",num2str(for_flux));
 fbacklabel = strcat("Flux cutoff = ",num2str(back_flux));
