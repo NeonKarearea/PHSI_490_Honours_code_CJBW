@@ -1,10 +1,10 @@
 clear all %#ok<CLALL>
 close all
-load('POES data PHSI 490\NOAA19\poes_n19_20120123.mat')
+load('POES data PHSI 490\NOAA19\poes_n19_20120125.mat')
 
 %plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),McIlwain_L_value(1:8:end));%Omni_directional_P6(1:8:end),'r','LineWidth',1.25)
-McIlwain = McIlwain_L_value(24881:2:26381);
-Flux = Omni_directional_P6(24881:2:26381);
+McIlwain = McIlwain_L_value(30281:2:31781);
+Flux = Omni_directional_P6(30281:2:31781);
 
 turning_point = find(McIlwain == max(McIlwain));
 McIlwain_forward = McIlwain(1:turning_point);
@@ -47,7 +47,7 @@ plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),
 plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),Omni_directional_P7(1:8:end),'b','LineWidth',1.25)
 plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),Omni_directional_P8(1:8:end),'g','LineWidth',1.25)
 scale=axis;
-axis([datenum(2012,1,23,6,55,0) datenum(2012,1,23,7,20,0) 0 scale(4)])
+%axis([datenum(2012,1,24,8,25,0) datenum(2012,1,24,8,50,0) 0 scale(4)])
 datetick('x',15,'keeplimits')
 set(gca,'FontSize',20,'FontWeight','demi')
 title("Proton flux for the P6, P7, and P8 omnidirectional telescopes over a polar pass")
