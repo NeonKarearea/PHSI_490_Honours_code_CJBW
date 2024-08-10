@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,num_grad)
+function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,num_grad,min_flux,min_avg_flux)
 %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     
     sat_lat_plus = sat_lat(2:end);
@@ -9,8 +9,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
     
     %This removes the effect of the SAMA (mostly) and removes points that
     %are clearly non-physical (i.e. negative points)
-    flux(idx>=-60&idx<=10&(jdx>=270|jdx<=40)) = NaN;
-    flux(flux<0) = NaN;
+    flux((idx>=-55&idx<=15&(jdx>=250|jdx<=40))|(idx>=-20&idx<=20)|(flux<0)) = NaN;
 
     %This finds where the satellite passes over the equator.
     transitions = zeros(size(sat_lat_minus));
@@ -34,12 +33,6 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
         L_shell_pass{i} = L_shell(start_pos:finish_pos);
         datenum_pass{i} = datenum(start_pos:finish_pos);
         MLT_pass{i} = MLT(start_pos:finish_pos);
-        
-        L_shell_lower = L_shell_pass{i};
-        L_shell_pass{i} = L_shell_pass{i}(L_shell_lower >= 2);
-        flux_pass{i} = flux_pass{i}(L_shell_lower >= 2);
-        datenum_pass{i} = datenum_pass{i}(L_shell_lower >= 2);
-        MLT_pass{i} = MLT(L_shell_lower >= 2);
         check = 1;
         
         if sat_lat(trans_loc(i)) < 0
@@ -76,7 +69,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
         [cut_flux, cut_L, cut_MLT] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
-            flux_pass_directional{k},MLT_pass_directional{k},m,num_grad);
+            flux_pass_directional{k},MLT_pass_directional{k},m,num_grad,min_flux,min_avg_flux);
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
         cutoff_MLTs(k) = cut_MLT;
@@ -96,11 +89,11 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
     
     for m = 1:length(cutoff_MLTs)
         if cutoff_MLTs(m) > 90 && cutoff_MLTs(m) < 270
-            sunside(m) = 1;
+            noon(m) = 1;
         elseif isnan(cutoff_MLTs(m))
-            sunside(m) = NaN;
+            noon(m) = NaN;
         else
-            sunside(m) = 0;
+            noon(m) = 0;
         end
     end
 
@@ -111,5 +104,5 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
     e = cutoff_L;
     f = cutoff_datenum;
     g = quadrant;
-    h = sunside;
+    h = noon;
 end

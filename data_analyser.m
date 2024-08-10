@@ -1,5 +1,5 @@
 function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
-    start_day,end_year,end_month,end_day,n,num_grad,P)
+    start_day,end_year,end_month,end_day,n,num_grad,min_flux,min_avg_flux,P)
     %This function takes in a start and end time and will then find all relevant data from all satellites. start_year, start_month, and start_day defines when the event starts. end_year, end_month, and end_day defines when the event ends. n is the data resolution for the Omni-directional detector used, num_grad is the number of gradients used to find the cutoff flux, and P is the Omni-directional detector.
 
     %This is the names and the file prefixes for the different satellites
@@ -48,12 +48,12 @@ function [a,b,c,d,e,f,g,h] = data_analyser(start_year,start_month,...
         if k == 1
             [fluxes,L_shells,datenums,cutoff_fluxes,cutoff_L_shells,cutoff_datenums,quadrants,sunside]...
                 = event_determine(start_date,end_date,relevant_satellite{k},...
-                n,num_grad,P);
+                n,num_grad,min_flux,min_avg_flux,P);
 
         else
             [fluxes_2,L_shells_2,datenums_2,cutoff_fluxes_2,cutoff_L_shells_2,cutoff_datenums_2,quadrants_2,sunside_2]...
                 = event_determine(start_date,end_date,relevant_satellite{k},...
-                n,num_grad,P);
+                n,num_grad,min_flux,min_avg_flux,P);
 
             %This merges the previous data with the newly obtained data.
             fluxes = [fluxes,fluxes_2];
