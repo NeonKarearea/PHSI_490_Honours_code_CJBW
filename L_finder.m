@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,num_grad,min_flux,min_avg_flux)
 %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     
     sat_lat_plus = sat_lat(2:end);
@@ -31,7 +31,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
         finish_pos = trans_loc(i);
         flux_pass{i} = flux(start_pos:finish_pos);
         L_shell_pass{i} = L_shell(start_pos:finish_pos);
-        datenum_pass{i} = datenum(start_pos:finish_pos);
+        datenum_pass{i} = datenums(start_pos:finish_pos);
         MLT_pass{i} = MLT(start_pos:finish_pos);
         check = 1;
         
@@ -79,11 +79,28 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenum,sat_lat,sat_lon,MLT,n
 
     %This will find the cutoff L_shells in time
     for l = 1:length(L_shell_pass_directional)
-        if ~isnan(cutoff_L(l))
+        if isempty(datenum_pass_directional{l})
+            final_pass_time = NaN;
+        else
+            final_pass_time = datenum_pass_directional{l}(end);
+        end
+        
+        if l == length(L_shell_pass_directional) || isempty(datenum_pass_directional{l+1})
+            start_next_pass_time = NaN;
+        else
+            start_next_pass_time = datenum_pass_directional{l+1}(1);
+        end
+        
+        del_time = datevec(start_next_pass_time - final_pass_time);
+        
+        if isnan(cutoff_L(l)) || del_time(6) > 2
+            cutoff_datenum(l) = mean(datenum_pass_directional{l});
+            cutoff_L(l) = NaN;
+            cutoff_flux(l) = NaN;
+            cutoff_MLT(l) = NaN;
+        else
             cutoff_loc = find(L_shell_pass_directional{l} == cutoff_L(l),1);
             cutoff_datenum(l) = datenum_pass_directional{l}(cutoff_loc);
-        else
-            cutoff_datenum(l) = mean(datenum_pass_directional{l});
         end
     end
     

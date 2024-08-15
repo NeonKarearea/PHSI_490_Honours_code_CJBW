@@ -3,23 +3,7 @@ load coastlines
 satlat = sub_satellite_latitude(1:8:end);
 satlon = sub_satellite_longitude(1:8:end);
 flux_p6 = Omni_directional_P6(1:8:end);
-%Yeah this part is definitely not ready yet.
-%{
-fig = figure(1);
-hold on
-plot(satlat,flux_p6)
-hold off
-
-fig = figure(2);
-hold on
-plot(satlon,flux_p6)
-hold off
-%}
-%fig = figure(3);
-%hold on
-%worldmap("World")
-%geoshow(log10(flux_p6),R)
-%hold off
+flux_p6((satlat>=-65&satlat<=15&(satlon>=250|satlon<=40))|(satlat>=-20&satlat<=20)|(flux_p6<0)) = NaN;
 gb = geobubble(satlat,satlon,log10(flux_p6));
 gb.Basemap = "grayland";
 

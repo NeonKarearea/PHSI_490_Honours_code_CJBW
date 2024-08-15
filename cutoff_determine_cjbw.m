@@ -32,7 +32,7 @@ function [a,b,c] = cutoff_determine_cjbw(L_shell,flux,MLT,m,num_grad,min_flux,mi
             else
                 [avg_grad_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
                 [avg_grad_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
-                if (avg_grad_in < 0 && avg_grad_out > 0) || (avg_del_flux_in < 0 && avg_del_flux_out > 0)
+                if (avg_grad_in < 0 && avg_grad_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0)
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
                     true_MLT = MLT(int64(sign_change_loc(i)));
