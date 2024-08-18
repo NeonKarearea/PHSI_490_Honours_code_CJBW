@@ -1,9 +1,10 @@
-*.mat
 Figures/
 Files for meeting tomorrow/
 files_from_craig/
 PEOS data PHSI 490/
 Readings for PHSI490/
+*.mat
 *.pdf
 *.zip
 *.asv
+*.csv

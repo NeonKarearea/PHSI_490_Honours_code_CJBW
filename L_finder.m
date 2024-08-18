@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i,j] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,dst_int,dst_non_int,num_grad,min_flux,min_avg_flux)
 %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     
     sat_lat_plus = sat_lat(2:end);
@@ -33,6 +33,8 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,
         L_shell_pass{i} = L_shell(start_pos:finish_pos);
         datenum_pass{i} = datenums(start_pos:finish_pos);
         MLT_pass{i} = MLT(start_pos:finish_pos);
+        dst_int_pass{i} = dst_int(start_pos:finish_pos);
+        dst_non_int_pass{i} = dst_non_int(start_pos:finish_pos);
         check = 1;
         
         if sat_lat(trans_loc(i)) < 0
@@ -52,6 +54,8 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,
         flux_examine = flux_pass{j};
         datenum_examine = datenum_pass{j};
         MLT_examine = MLT_pass{j};
+        dst_int_examine = dst_int_pass{j};
+        dst_non_int_examine = dst_non_int_pass{j};
     
         del_L_loc = find(L_shell_examine == max(L_shell_examine));
     
@@ -63,16 +67,23 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,
         datenum_pass_directional{2*j} = datenum_examine(del_L_loc+1:end);
         MLT_pass_directional{(2*j)-1} = MLT_examine(1:del_L_loc);
         MLT_pass_directional{2*j} = MLT_examine(del_L_loc+1:end);
+        dst_int_pass_directional{(2*j)-1} = dst_int_examine(1:del_L_loc);
+        dst_int_pass_directional{2*j} = dst_int_examine(del_L_loc+1:end);
+        dst_non_int_pass_directional{(2*j)-1} = dst_non_int_examine(1:del_L_loc);
+        dst_non_int_pass_directional{2*j} = dst_non_int_examine(del_L_loc+1:end);
     end
 
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        [cut_flux, cut_L, cut_MLT] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
-            flux_pass_directional{k},MLT_pass_directional{k},m,num_grad,min_flux,min_avg_flux);
+        [cut_flux, cut_L, cut_MLT,cut_dst_int,cut_dst_non_int] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
+            flux_pass_directional{k},MLT_pass_directional{k},dst_int_pass_directional{k},...
+            dst_non_int_pass_directional{k},m,num_grad,min_flux,min_avg_flux);
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
         cutoff_MLTs(k) = cut_MLT;
+        cutoff_dst_int(k) = cut_dst_int;
+        cutoff_dst_non_int(k) = cut_dst_non_int;
         m = mod(m+1,2);
     end
 
@@ -97,7 +108,7 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,
             cutoff_datenum(l) = mean(datenum_pass_directional{l});
             cutoff_L(l) = NaN;
             cutoff_flux(l) = NaN;
-            cutoff_MLT(l) = NaN;
+            cutoff_MLTs(l) = NaN;
         else
             cutoff_loc = find(L_shell_pass_directional{l} == cutoff_L(l),1);
             cutoff_datenum(l) = datenum_pass_directional{l}(cutoff_loc);
@@ -122,4 +133,6 @@ function [a,b,c,d,e,f,g,h] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,
     f = cutoff_datenum;
     g = quadrant;
     h = noon;
+    i = cutoff_dst_int;
+    j = cutoff_dst_non_int;
 end

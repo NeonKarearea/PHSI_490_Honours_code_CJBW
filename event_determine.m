@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h] = event_determine(start_date,end_date,...
+function [a,b,c,d,e,f,g,h,i,j] = event_determine(start_date,end_date,...
     satellite,n,num_grad,min_flux,min_avg_flux,P)
     %This function takes in a start time and end time and from there can
     %analyse a single event for a given satellite. The satellite data for
@@ -59,8 +59,11 @@ function [a,b,c,d,e,f,g,h] = event_determine(start_date,end_date,...
     event_sat_lat = event.sub_satellite_latitude(start_loc:n:end_loc);
     event_sat_lon = event.sub_satellite_longitude(start_loc:n:end_loc);
     event_MLT = event.fofl_magnetic_local_time(start_loc:n:end_loc);
+    event_dst_int = event.dst_interp(start_loc:n:end_loc);
+    event_dst_non_int = event.dst_non_interp(start_loc:n:end_loc);
     
     %Finally, we can find where the cutoffs are.
-    [a,b,c,d,e,f,g,h] = L_finder(event_flux,event_L_shell,event_datenum,...
-        event_sat_lat,event_sat_lon,event_MLT,num_grad,min_flux,min_avg_flux);
+    [a,b,c,d,e,f,g,h,i,j] = L_finder(event_flux,event_L_shell,event_datenum,...
+        event_sat_lat,event_sat_lon,event_MLT,event_dst_int,event_dst_non_int,...
+        num_grad,min_flux,min_avg_flux);
 end
