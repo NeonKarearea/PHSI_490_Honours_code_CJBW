@@ -1,4 +1,4 @@
-function [a,b] = gm_interpolate(start_datenum, end_datenum,data)
+function [a,b] = gm_interpolate(start_datenum,end_datenum,data)
     seconds_offset = int64((start_datenum - floor(start_datenum))/datenum(00,00,00,00,00,01));
     dstdata = csvread(data,9,2);
     datenums = (start_datenum:datenum(00,00,00,00,00,01):end_datenum)';

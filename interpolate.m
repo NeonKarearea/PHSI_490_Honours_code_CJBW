@@ -70,8 +70,8 @@ function interpolate(satellite)
             end
         end
         
-        start_time = datenum(double(event_data.year(1)),1,double(event_data.day_of_year(1)),double(event_data.hour(1)),double(event_data.minute(1)),double(event_data.second(1)));
-        end_time = datenum(double(event_data.year(end)),1,double(event_data.day_of_year(end)),double(event_data.hour(end)),double(event_data.minute(end)),double(event_data.second(end)));
+        start_time = datenum(double(event_data.year(1)),1,double(event_data.day_of_year(1)),00,00,00);
+        end_time = datenum(double(event_data.year(end)),1,double(event_data.day_of_year(end))+1,00,00,00);
         
         start_date = datevec(datenum((double(event_data.year(1))),1,double((event_data.day_of_year(1)))));
         start_year = num2str(start_date(1));
@@ -116,14 +116,6 @@ function interpolate(satellite)
         interp_mag_lat = interp1(x(idxmaglat),mag_lat(idxmaglat),x);
         interp_MLT = interp1(x(idxMLT),MLT(idxMLT),x,'spline');
         [dst_interp, dst_non_interp] = gm_interpolate(start_time,end_time,data);
-        
-        time_jump = find(del_datenum > 1);
-        if ~isempty(time_jump)
-            for i = 1:(length(time_jump)/2)
-                dst_interp(time_jump(i):time_jump(i+1)) = [];
-                dst_non_interp(time_jump(i):time_jump(i+1)) = [];
-            end
-        end
         
         %Now we need to break the event_data back into the date_data.
         for n = 1:length(event)
