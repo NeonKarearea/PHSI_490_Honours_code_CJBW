@@ -1,4 +1,4 @@
-function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst_int,dst_non_int,m,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,m,num_grad,min_flux,min_avg_flux)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -18,8 +18,8 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst_int,dst_non_in
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
-        true_dst_int = NaN;
-        true_dst_non_int = NaN;
+        true_dst = NaN;
+        true_kp = NaN;
     else
         %This will find all the points where the difference in cutoff and
         %measured flux changes sign
@@ -38,8 +38,8 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst_int,dst_non_in
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
                     true_MLT = MLT(int64(sign_change_loc(i)));
-                    true_dst_int = dst_int(int64(sign_change_loc(i)));
-                    true_dst_non_int = dst_non_int(int64(sign_change_loc(i)));
+                    true_dst = dst(int64(sign_change_loc(i)));
+                    true_kp = kp(int64(sign_change_loc(i)));
                     break
                 else
                     continue
@@ -55,12 +55,12 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst_int,dst_non_in
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
-        true_dst_int = NaN;
-        true_dst_non_int = NaN;
+        true_dst = NaN;
+        true_kp = NaN;
     end
     a = true_flux;
     b = true_L;
     c = true_MLT;
-    d = true_dst_int;
-    e = true_dst_non_int;
+    d = true_dst;
+    e = true_kp;
 end

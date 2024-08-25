@@ -23,14 +23,14 @@ function interpolate(satellite)
             event_set{j-end_event_file} = file_names{j};
             k = 1;
             while k>0
-                start_time = split(file_names{j+k-1},'_');
-                start_time = split(start_time{3},'.');
-                start_time = datenum(start_time{1},'yyyymmdd');
+                start_datenum = split(file_names{j+k-1},'_');
+                start_datenum = split(start_datenum{3},'.');
+                start_datenum = datenum(start_datenum{1},'yyyymmdd');
                 next_date = split(file_names{j+k},'_');
                 next_date = split(next_date{3},'.');
                 next_date = datenum(next_date{1},'yyyymmdd');
                 
-                if next_date - start_time ~= 1
+                if next_date - start_datenum ~= 1
                     events{loop+(j-end_event_file)} = event_set;
                     end_event_file = j+k-1;
                     k = 0;
@@ -61,6 +61,7 @@ function interpolate(satellite)
         %values
         disp(l)
         event = events{l};
+        
         for m = 1:length(event)
             if m == 1
                 event_data = struct2table(load(strcat(path,'\',event{m})));
@@ -70,8 +71,8 @@ function interpolate(satellite)
             end
         end
         
-        start_time = datenum(double(event_data.year(1)),1,double(event_data.day_of_year(1)),00,00,00);
-        end_time = datenum(double(event_data.year(end)),1,double(event_data.day_of_year(end))+1,00,00,00);
+        start_datenum = datenum(double(event_data.year(1)),1,double(event_data.day_of_year(1)),00,00,00);
+        end_datenum = datenum(double(event_data.year(end)),1,double(event_data.day_of_year(end))+1,00,00,00);
         
         start_date = datevec(datenum((double(event_data.year(1))),1,double((event_data.day_of_year(1)))));
         start_year = num2str(start_date(1));
@@ -92,10 +93,8 @@ function interpolate(satellite)
             start_day = num2str(start_day);
         end
         
-        data = strcat("dst_",start_year,start_month,start_day,".csv");
+        data = strcat(start_year,start_month,start_day,".csv");
         
-        datenums = datenum(double(event_data.year),1,double(event_data.day_of_year),double(event_data.hour),double(event_data.minute),double(event_data.second));
-        del_datenum = diff(datenums);
         L = event_data.McIlwain_L_value;
         geo_lat = event_data.sub_satellite_latitude;
         geo_lon = event_data.sub_satellite_longitude;
@@ -115,40 +114,30 @@ function interpolate(satellite)
         interp_geo_lon = interp1(x(idxgeolon),geo_lon(idxgeolon),x);
         interp_mag_lat = interp1(x(idxmaglat),mag_lat(idxmaglat),x);
         interp_MLT = interp1(x(idxMLT),MLT(idxMLT),x,'spline');
-        [dst_interp, dst_non_interp] = gm_interpolate(start_time,end_time,data);
+        [dst, kp] = gm_interpolate(start_datenum,end_datenum,data);
         
         %Now we need to break the event_data back into the date_data.
         for n = 1:length(event)
+            %This gets the data
+            date_data = matfile(strcat(path,'\',event{n}));
+            date_data.Properties.Writable = true;
             if n == 1
-                %This gets the data
-                date_data = matfile(strcat(path,'\',event{n}));
-                date_data.Properties.Writable = true;
+                start_point = 1;
                 end_point = length(date_data.McIlwain_L_value);
-                
-                %This writes it in
-                date_data.McIlwain_L_value = (interp_L(1:end_point)');
-                date_data.sub_satellite_latitude = (interp_geo_lat(1:end_point)');
-                date_data.sub_satellite_longitude = (interp_geo_lon(1:end_point)');
-                date_data.fofl_magnetic_latitude = (interp_mag_lat(1:end_point)');
-                date_data.fofl_magnetic_local_time = (interp_MLT(1:end_point)');
-                date_data.dst_interp = dst_interp(1:end_point);
-                date_data.dst_non_interp = dst_non_interp(1:end_point);
             else
-                %This gets the data
-                date_data = matfile(strcat(path,'\',event{n}));
-                date_data.Properties.Writable = true;
                 start_point =  end_point+1;
                 end_point = end_point+length(date_data.fofl_magnetic_local_time);
-                
-                %This writes it in
-                date_data.McIlwain_L_value = (interp_L(start_point:end_point)');
-                date_data.sub_satellite_latitude = (interp_geo_lat(start_point:end_point)');
-                date_data.sub_satellite_longitude = (interp_geo_lon(start_point:end_point)');
-                date_data.fofl_magnetic_latitude = (interp_mag_lat(start_point:end_point)');
-                date_data.fofl_magnetic_local_time = (interp_MLT(start_point:end_point)');
-                date_data.dst_interp = dst_interp(start_point:end_point);
-                date_data.dst_non_interp = dst_non_interp(start_point:end_point);
             end
+            start_time = int64(((datenum(double(event_data.year(start_point)),1,double(event_data.day_of_year(start_point)),double(event_data.hour(start_point)),double(event_data.minute(start_point)),double(event_data.second(start_point)))-start_datenum)*86400))+1;
+
+            %This writes it in
+            date_data.McIlwain_L_value = (interp_L(start_point:end_point)');
+            date_data.sub_satellite_latitude = (interp_geo_lat(start_point:end_point)');
+            date_data.sub_satellite_longitude = (interp_geo_lon(start_point:end_point)');
+            date_data.fofl_magnetic_latitude = (interp_mag_lat(start_point:end_point)');
+            date_data.fofl_magnetic_local_time = (interp_MLT(start_point:end_point)');
+            date_data.dst = dst(start_time:(end_point+start_time-start_point));
+            date_data.kp = kp(start_time:(end_point+start_time-start_point));
         end        
     end
     disp(strcat(satellite," has been interpolated."))
