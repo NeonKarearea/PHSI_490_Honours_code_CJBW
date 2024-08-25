@@ -1,4 +1,6 @@
 function MLT_correct(satellite)
+%This corrects the magnetic local time from hours to degrees for the 2017
+%events.
     path = convertStringsToChars(strcat('POES data PHSI 490\',satellite));
     file = struct2table(dir(path));
     offset = 0;
