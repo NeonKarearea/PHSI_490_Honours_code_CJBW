@@ -1,11 +1,16 @@
-function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,m,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,lat,lon,m,...
+    num_grad,min_flux,min_avg_flux)
 %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
         flux = flux(end:-1:1);
     end
+    r_earth = 6.371e6; %meters, radius of Earth
+    r_sat = 8.50e5; %meters, average orbital height of the POES satellites
     
-    L_crit = 1/((cosd(70))^2);
+    r = (r_earth+r_sat)/r_earth;
+    
+    L_crit = r/((cosd(70))^2);
     L_70 = find(L_shell>=L_crit, 1);
     avg_flux = mean(flux(L_70:end));
     
@@ -20,6 +25,8 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,m,num_grad,
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
+        true_lat = NaN;
+        true_lon = NaN;
     else
         %This will find all the points where the difference in cutoff and
         %measured flux changes sign
@@ -40,6 +47,8 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,m,num_grad,
                     true_MLT = MLT(int64(sign_change_loc(i)));
                     true_dst = dst(int64(sign_change_loc(i)));
                     true_kp = kp(int64(sign_change_loc(i)));
+                    true_lat = lat(int64(sign_change_loc(i)));
+                    true_lon = lon(int64(sign_change_loc(i)));
                     break
                 else
                     continue
@@ -57,10 +66,14 @@ function [a,b,c,d,e] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,m,num_grad,
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
+        true_lat = NaN;
+        true_lon = NaN;
     end
     a = true_flux;
     b = true_L;
     c = true_MLT;
     d = true_dst;
     e = true_kp;
+    f = true_lat;
+    g = true_lon;
 end
