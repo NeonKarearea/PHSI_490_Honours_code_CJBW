@@ -60,7 +60,7 @@ function [a,b,c,d,e,f,g] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,lat,lon
     %This is a final catch in case the cutoff flux isn't found (This also
     %removes points below a cutoff flux value of 11 and an average flux of 
     %22 (this forms our noise floor))
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||isempty(flux(flux<=min_flux))
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
