@@ -17,15 +17,15 @@ function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,...
         %various reasons.
         if i == start_date
             try
-            event = struct2table(load(strcat('POES data PHSI 490\',satellite,"_",date_string,".mat"))');
+                event = struct2table(load(strcat('POES data PHSI 490\',satellite,"_",date_string,".mat"))');
             catch
                 warning("No file by the name " + strcat(satellite,"_",date_string,".mat") + " was found. This file has been skipped")
                 start_date = start_date+1;
             end
         else
             try
-            next_event = struct2table(load(strcat('POES data PHSI 490\',satellite,"_",date_string,".mat")));
-            event = [event;next_event];
+                next_event = struct2table(load(strcat('POES data PHSI 490\',satellite,"_",date_string,".mat")));
+                event = [event;next_event];
             catch
                 warning("No file by the name " + strcat(satellite,"_",date_string,".mat") + " was found. This file has been skipped")
             end

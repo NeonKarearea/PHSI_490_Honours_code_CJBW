@@ -103,10 +103,10 @@ function interpolate(satellite)
         
         x = 1:length(L);
         idxL = L ~= -999 & L ~= -1 & L ~= 100;
-        idxgeolat = geo_lat ~= -999 & geo_lat ~= -1 & geo_lat ~= 100;
-        idxgeolon = geo_lon ~= -999 & geo_lon ~= -1 & geo_lon ~= 100;
-        idxMLT = MLT ~= -999 & MLT ~= -1 & MLT ~= 100;
-        idxmaglat = mag_lat ~= 999 & mag_lat ~= 100;
+        idxgeolat = geo_lat ~= -999;
+        idxgeolon = geo_lon ~= -999;
+        idxMLT = MLT ~= -999;
+        idxmaglat = mag_lat ~= 999;
 
         %And this interpolates the data.
         interp_L = interp1(x(idxL),L(idxL),x,'spline');

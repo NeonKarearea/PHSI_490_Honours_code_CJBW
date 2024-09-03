@@ -20,7 +20,7 @@ function [a,b] = gm_interpolate(start_datenum,end_datenum,data)
     idx = ~isnan(dst_proto);
     idy = ~isnan(kp_proto);
     dst_interp = (interp1(x(idx),dst_proto(idx),x,'spline')');
-    kp_interp = (interp1(x(idy),kp_proto(idy),x)');
+    kp_interp = (interp1(x(idy),kp_proto(idy),x,'spline')');
     kp_interp(kp_interp >= 9.00) = 9.00;
     kp_interp(kp_interp <= 0.00) = 0.00;
     
