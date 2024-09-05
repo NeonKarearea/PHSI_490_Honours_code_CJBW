@@ -1,7 +1,7 @@
 function [a,b] = gm_interpolate(start_datenum,end_datenum,data)
     seconds_offset = int64((start_datenum - floor(start_datenum))/datenum(00,00,00,00,00,01));
-    dstdata = csvread(strcat("dst_",data),9,2);
-    kpdata = csvread(strcat("kp_",data),9,2)./10;
+    dstdata = csvread(strcat("Data_for_interpolation\dst_",data),9,2);
+    kpdata = csvread(strcat("Data_for_interpolation\kp_",data),9,2)./10;
     datenums = (start_datenum:datenum(00,00,00,00,00,01):end_datenum)';
     dst_proto = NaN*ones(size(datenums));
     kp_proto = NaN*ones(size(datenums));
