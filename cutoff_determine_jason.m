@@ -1,4 +1,4 @@
-function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
+function [a,b,c] = cutoff_determine_jason(L_shell, flux, n, m)
     if m == 1
         L_shell = L_shell(end:-1:1);
         flux = flux(end:-1:1);
@@ -18,7 +18,6 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
     if isnan(avg_flux) == 1
         true_flux = NaN;
         true_L = NaN;
-        true_MLT = NaN;
     else
         %This makes sure that it has the right flux
         for i = 1:length(val_del_flux)
@@ -40,7 +39,6 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
                     if dPhi/dL >= 0 && dPhi2/dL2 >= 0
                         true_flux = flux(int64(val_del_flux(i)));
                         true_L = L_closest;
-                        true_MLT = MLT(int64(val_del_flux(i)));
                         break
                     else
                         continue
@@ -59,9 +57,7 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
     if ~exist('true_flux','var') || ~exist('true_L','var')
         true_flux = NaN;
         true_L = NaN;
-        true_MLT = NaN;
     end
     a = true_flux;
     b = true_L;
-    c = true_MLT;
 end

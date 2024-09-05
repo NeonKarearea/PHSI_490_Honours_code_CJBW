@@ -1,5 +1,3 @@
-clear all %#ok<CLALL>
-close all
 load('POES data PHSI 490\NOAA19\poes_n19_20120123.mat')
 
 %plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),McIlwain_L_value(1:8:end));%Omni_directional_P6(1:8:end),'r','LineWidth',1.25)
@@ -13,22 +11,22 @@ pf_for = Flux(1:turning_point);
 pf_back = Flux(turning_point+1:end);
 
 %Ths finds the averages and then the cutoff flux
-[for_flux, for_L] = cutoff_determine_jason(McIlwain_forward,pf_for,0.2,0);
-[back_flux, back_L] = cutoff_determine_jason(McIlwain_backward,pf_back,0.2,1);
+[for_flux_better_jason, for_L_better_jason] = cutoff_determine_jason(McIlwain_forward,pf_for,0.2,0);
+[back_flux_better_jason, back_L_better_jason] = cutoff_determine_jason(McIlwain_backward,pf_back,0.2,1);
 
-fforlabel = strcat("Flux cutoff = ",num2str(for_flux));
-fbacklabel = strcat("Flux cutoff = ",num2str(back_flux));
-lforlabel = strcat("L shell cutoff = ",num2str(for_L));
-lbacklabel = strcat("L shell cutoff = ",num2str(back_L));
+fforlabel = strcat("Flux cutoff = ",num2str(for_flux_better_jason));
+fbacklabel = strcat("Flux cutoff = ",num2str(back_flux_better_jason));
+lforlabel = strcat("L shell cutoff = ",num2str(for_L_better_jason));
+lbacklabel = strcat("L shell cutoff = ",num2str(back_L_better_jason));
 
 figure(1);
 hold on
 plot(McIlwain_forward,pf_for,'b-')
 plot(McIlwain_backward,pf_back,'r-')
-plot(0:1:40,for_flux*ones(1,41),'b--')
-plot(0:1:40,back_flux*ones(1,41),'r--')
-plot(for_L*ones(1,2501),0:1:2500,'b-.')
-plot(back_L*ones(1,2501),0:1:2500,'r-.')
+plot(0:1:40,for_flux_better_jason*ones(1,41),'b--')
+plot(0:1:40,back_flux_better_jason*ones(1,41),'r--')
+plot(for_L_better_jason*ones(1,2501),0:1:2500,'b-.')
+plot(back_L_better_jason*ones(1,2501),0:1:2500,'r-.')
 text(10,10,fforlabel,"FontSize",10)
 text(10,10,fbacklabel,"FontSize",10)
 text(10,10,lforlabel,"FontSize",10)
