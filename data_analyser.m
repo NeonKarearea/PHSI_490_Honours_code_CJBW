@@ -1,15 +1,15 @@
 function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
-    start_day,end_year,end_month,end_day,P,varargin)
+    start_day,end_year,end_month,end_day,n,P,varargin)
     %This function takes in a start and end time and will then find all relevant data from all satellites. start_year, start_month, and start_day defines when the event starts. end_year, end_month, and end_day defines when the event ends. n is the data resolution for the Omni-directional detector used, num_grad is the number of gradients used to find the cutoff flux, and P is the Omni-directional detector.
     
-    if nargin < 8
+    if nargin < 9
         error("Not enough inputs. Please try again")
-    elseif nargin > 8
+    elseif nargin > 9
         error("Too many input arguments.")
-    elseif nargin == 8 && (upper(varargin{1}) ~= "LESKE" && upper(varargin{1}) ~= "NEAL")
+    elseif nargin == 9 && (upper(varargin{1}) ~= "LESKE" && upper(varargin{1}) ~= "NEAL")
         error("Please use either LESKE or NEAL as the method name")
     else
-        method = varargin{1};
+        method = upper(varargin{1});
     end
     
     %This is the names and the file prefixes for the different satellites
@@ -57,11 +57,11 @@ function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
     for k = 1:length(relevant_satellite)
         if k == 1
             [fluxes,L_shells,datenums,cutoff_fluxes,cutoff_L_shells,cutoff_datenums,sunside,dst,kp,geo_lat,geo_long]...
-                = event_determine(start_date,end_date,relevant_satellite{k},P,method);
+                = event_determine(start_date,end_date,relevant_satellite{k},n,P,method);
 
         else
             [fluxes_2,L_shells_2,datenums_2,cutoff_fluxes_2,cutoff_L_shells_2,cutoff_datenums_2,sunside_2,dst_2,kp_2,geo_lat_2,geo_long_2]...
-                = event_determine(start_date,end_date,relevant_satellite{k},P,method);
+                = event_determine(start_date,end_date,relevant_satellite{k},n,P,method);
 
             %This merges the previous data with the newly obtained data.
             fluxes = [fluxes,fluxes_2];
@@ -122,12 +122,10 @@ function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
     
     %This will let the user know a) which satellites have been skipped and
     %b) which ones have incomplete data.
-    if print == 1
-        disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
-        disp(skipped_satellite)
-        disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
-        disp(incomplete_satellite)
-    end
+    disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
+    disp(skipped_satellite)
+    disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
+    disp(incomplete_satellite)
     
     a = sorted_fluxes;
     b = sorted_L_shells;

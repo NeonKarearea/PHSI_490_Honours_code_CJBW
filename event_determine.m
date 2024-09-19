@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,satellite,P,method)
+function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,satellite,n,P,method)
     %This function takes in a start time and end time and from there can
     %analyse a single event for a given satellite. The satellite data for
     %this project is in the 'POES data PHSI 490' folder and the satellite

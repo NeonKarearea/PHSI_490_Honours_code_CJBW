@@ -80,7 +80,7 @@ function [a,b,c,d,e,f,g,h,i,j,k] = L_finder(flux,L_shell,datenums,sat_lat,sat_lo
         elseif method == "NEAL"
             [cut_flux, cut_L, cut_MLT,cut_dst,cut_kp,cut_lat,cut_lon] = cutoff_determine_neal(L_shell_pass_directional{k},...
                 flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
-                kp_pass_directional{k},sat_lat_directional{k},sat_lon_directional{k},k);
+                kp_pass_directional{k},sat_lat_directional{k},sat_lon_directional{k},0.2,k);
         end
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;

@@ -1,4 +1,4 @@
-function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
+function [a,b,c,d,e,f,g] = cutoff_determine_neal(L_shell,flux,MLT,dst,kp,lat,lon,diff,m)
     if m == 1
         L_shell = L_shell(end:-1:1);
         flux = flux(end:-1:1);
@@ -19,6 +19,10 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
+        true_dst = NaN;
+        true_kp = NaN;
+        true_lat = NaN;
+        true_lon = NaN;
     else
         %This makes sure that it has the right flux
         for i = 1:length(val_del_flux)
@@ -29,7 +33,7 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
                 L_2_closest = L_shell((int64(val_del_flux(i)))+1);
                 
                 %First Check: dL is small
-                if abs(L_closest - L_2_closest) <= n
+                if abs(L_closest - L_2_closest) <= diff
                     dL = L_2_closest - L_closest;
                     dPhi = flux(int64(val_del_flux(i))+1) - flux(int64(val_del_flux(i)));
                     
@@ -41,6 +45,10 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
                         true_flux = flux(int64(val_del_flux(i)));
                         true_L = L_closest;
                         true_MLT = MLT(int64(val_del_flux(i)));
+                        true_dst = dst(int64(val_del_flux(i)));
+                        true_kp = kp(int64(val_del_flux(i)));
+                        true_lat = lat(int64(val_del_flux(i)));
+                        true_lon = lon(int64(val_del_flux(i)));
                         break
                     else
                         continue
@@ -60,8 +68,16 @@ function [a,b,c] = cutoff_determine_jason(L_shell, flux, MLT, n, m)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
+        true_dst = NaN;
+        true_kp = NaN;
+        true_lat = NaN;
+        true_lon = NaN;
     end
     a = true_flux;
     b = true_L;
     c = true_MLT;
+    d = true_dst;
+    e = true_kp;
+    f = true_lat;
+    g = true_lon;
 end
