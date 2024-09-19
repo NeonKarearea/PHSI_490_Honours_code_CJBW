@@ -1,3 +1,4 @@
+%This makes the figures found in Figure 5.3. Unfortunately, to get each figure you have to manually load the relevant data file in and then comment out certain parts of like 7 to get what you want.
 close all
 satlat = sub_satellite_latitude(1:8:end);
 satlon = sub_satellite_longitude(1:8:end);

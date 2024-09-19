@@ -1,5 +1,5 @@
 function [a,b,c,d,e,f,g,h,i,j,k] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,dst,kp,num_grad,min_flux,min_avg_flux)
-%This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
+    %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     sat_lat_plus = sat_lat(2:end);
     sat_lat_minus = sat_lat(1:end-1);
     

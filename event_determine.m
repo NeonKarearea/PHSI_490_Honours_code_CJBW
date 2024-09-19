@@ -1,13 +1,6 @@
 function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,...
     satellite,n,num_grad,min_flux,min_avg_flux,P)
-    %This function takes in a start time and end time and from there can
-    %analyse a single event for a given satellite. The satellite data for
-    %this project is in the 'POES data PHSI 490' folder and the satellite
-    %variable should be written as
-    %'{satellite_name}\poes_{satellite_prefix}' (i.e. MetOp1\poes_m01). 'n'
-    %is the rate that the data is measured in (i.e. the P6 Omnidirectional
-    %detector is sampled with n=2) and num_gradient is the number of
-    %gradients that will be compared.
+    %This function takes in a start time and end time and from there can analyse a single event for a given satellite. The satellite data for this project is in the 'POES data PHSI 490' folder and the satellite variable should be written as '{satellite_name}\poes_{satellite_prefix}' (i.e. MetOp1\poes_m01). 'n' is the data resolution for the Omni directional detector used, num_gradient is the number of gradients that will be compared min_flux is the minimum cutoff flux, min_avg_flux is the minimum average flux, and P is the detector
     
     %This will concantenate the data over the event length.
     for i = start_date:end_date

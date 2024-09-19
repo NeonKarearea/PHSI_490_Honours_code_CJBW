@@ -30,10 +30,10 @@ function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
     used_sat = 0;
     incomplete_satellite = {};
     
+    %This gets all of the satellites that have some data
     for i = 1:length(satellite_names)
         file = strcat(satellite_names{i},"\poes_",satellite_prefix{i});
         skipped_file = 0;
-        %This will check if there is a single file
         for j = start_date:end_date
             date_string = datestr(datevec(j),'yyyymmdd');
             existence = isfile(strcat('POES data PHSI 490\',file,"_",date_string,".mat"));

@@ -1,6 +1,6 @@
 function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,m,...
     num_grad,min_flux,min_avg_flux)
-%This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
+    %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
         flux = flux(end:-1:1);
@@ -60,8 +60,7 @@ function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,
     %This is a final catch in case the cutoff flux isn't found and removes
     %passes that at any point touch the SAMA
     front_half_flux = flux(1:floor(length(flux)/2));
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)...||(find(flux==min(flux))>=(length(flux)/2))...
-            %(((~isempty(lat(lat>=-60&lat<=20))&&~isempty(lon(lon>=240|lon<=50)))||(~isempty(lat(lat>=-65&lat<=20))&&~isempty(lon(lon>=270))))&&find(flux==min(flux))>=(length(flux)/2))
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;

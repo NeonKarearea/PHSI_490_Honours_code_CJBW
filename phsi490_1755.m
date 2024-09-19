@@ -1,8 +1,8 @@
+%This code gets the cutoff flux and L-shell for the pass starting from 17:55 UT on the 25th of January 2012
 clear all %#ok<CLALL>
 close all
 load('POES data PHSI 490\NOAA19\poes_n19_20120125.mat')
 
-%plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),McIlwain_L_value(1:8:end));%Omni_directional_P6(1:8:end),'r','LineWidth',1.25)
 McIlwain = McIlwain_L_value(30281:2:31781);
 Flux = Omni_directional_P6(30281:2:31781);
 
