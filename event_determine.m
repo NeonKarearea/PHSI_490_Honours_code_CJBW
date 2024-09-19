@@ -1,5 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,...
-    satellite,n,num_grad,min_flux,min_avg_flux,P)
+function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,satellite,P,method)
     %This function takes in a start time and end time and from there can
     %analyse a single event for a given satellite. The satellite data for
     %this project is in the 'POES data PHSI 490' folder and the satellite
@@ -64,6 +63,5 @@ function [a,b,c,d,e,f,g,h,i,j,k] = event_determine(start_date,end_date,...
     
     %Finally, we can find where the cutoffs are.
     [a,b,c,d,e,f,g,h,i,j,k] = L_finder(event_flux,event_L_shell,event_datenum,...
-        event_sat_lat,event_sat_lon,event_MLT,event_dst,event_kp,...
-        num_grad,min_flux,min_avg_flux);
+        event_sat_lat,event_sat_lon,event_MLT,event_dst,event_kp,method);
 end

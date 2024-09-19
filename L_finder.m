@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,dst,kp,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i,j,k] = L_finder(flux,L_shell,datenums,sat_lat,sat_lon,MLT,dst,kp,method)
 %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     sat_lat_plus = sat_lat(2:end);
     sat_lat_minus = sat_lat(1:end-1);
@@ -73,10 +73,15 @@ function [a,b,c,d,e,f,g,h,i,j,k] = L_finder(flux,L_shell,datenums,sat_lat,sat_lo
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        [cut_flux, cut_L, cut_MLT,cut_dst,cut_kp,cut_lat,cut_lon] = cutoff_determine_new(L_shell_pass_directional{k},...
-            flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
-            kp_pass_directional{k},sat_lat_directional{k},sat_lon_directional{k},...
-            m,num_grad,min_flux,min_avg_flux);
+        if method == "LESKE"
+            [cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_lat,cut_lon] = cutoff_determine_leske(L_shell_pass_directional{k},...
+                flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
+                kp_pass_directional{k},sat_lat_directional{k},sat_lon_directional{k},k);
+        elseif method == "NEAL"
+            [cut_flux, cut_L, cut_MLT,cut_dst,cut_kp,cut_lat,cut_lon] = cutoff_determine_neal(L_shell_pass_directional{k},...
+                flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
+                kp_pass_directional{k},sat_lat_directional{k},sat_lon_directional{k},k);
+        end
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
         cutoff_MLTs(k) = cut_MLT;
