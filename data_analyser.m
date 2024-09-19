@@ -1,7 +1,19 @@
 function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
-    start_day,end_year,end_month,end_day,n,num_grad,min_flux,min_avg_flux,P)
+    start_day,end_year,end_month,end_day,n,num_grad,min_flux,min_avg_flux,P,varargin)
     %This function takes in a start and end time and will then find all relevant data from all satellites. start_year, start_month, and start_day defines when the event starts. end_year, end_month, and end_day defines when the event ends. n is the data resolution for the Omni-directional detector used, num_grad is the number of gradients used to find the cutoff flux, and P is the Omni-directional detector.
-
+    
+    if nargin < 11
+        error("Not enough input arguments")
+    elseif nargin > 12
+        error("Too many input arguments")
+    elseif nargin == 11
+        print = 1;
+    elseif ~isnumeric(varargin{1})
+        error("Please set the print parameter to be on (1) or off (0)")
+    else
+        print = varargin{1};
+    end
+    
     %This is the names and the file prefixes for the different satellites
     satellite_names = {'MetOp1','MetOp2','NOAA15','NOAA16','NOAA17','NOAA18','NOAA19'};
     satellite_prefix = {'m01','m02','n15','n16','n17','n18','n19'};
@@ -114,11 +126,13 @@ function [a,b,c,d,e,f,g,h,i,j,k] = data_analyser(start_year,start_month,...
     
     %This will let the user know a) which satellites have been skipped and
     %b) which ones have incomplete data.
-    disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
-    disp(skipped_satellite)
-    disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
-    disp(incomplete_satellite)
-    
+    if print == 1
+        disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
+        disp(skipped_satellite)
+        disp(strcat(num2str(incomplete_sat)," satellites had incomplete data. These satellites were:"))
+        disp(incomplete_satellite)
+    end
+        
     a = sorted_fluxes;
     b = sorted_L_shells;
     c = sorted_datenums;
