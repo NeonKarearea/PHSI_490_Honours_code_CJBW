@@ -35,7 +35,7 @@ Outputs are:
 - cutoff Dsts [Vector]
 - cutoff Kps [Vector]
 - cutoff geographic latitudes [Vector]
-- cutoff geographic longitudes [Vector
+- cutoff geographic longitudes [Vector]
 
 ## event_determine.m
 event_determine.m is a function that find the same information as in data_analyser.m but only for one satellite. Inputs are:
