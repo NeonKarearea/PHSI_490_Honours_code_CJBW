@@ -98,7 +98,8 @@ function interpolate(satellite)
         L = event_data.McIlwain_L_value;
         geo_lat = event_data.sub_satellite_latitude;
         geo_lon = event_data.sub_satellite_longitude;
-        mag_lat = event_data.fofl_geomagnetic_latitude;
+        geomag_lat = event_data.fofl_geomagnetic_latitude;
+        geomag_lon = event_data.fofl_geomag_longitude;
         MLT = event_data.fofl_magnetic_local_time;
         
         x = 1:length(L);
@@ -106,13 +107,15 @@ function interpolate(satellite)
         idxgeolat = geo_lat ~= -999;
         idxgeolon = geo_lon ~= -999;
         idxMLT = MLT ~= -999;
-        idxmaglat = mag_lat ~= 999;
+        idxgeomaglat = geomag_lat ~= -999;
+        idxgeomaglon = geomag_lon ~= -999;
 
         %And this interpolates the data.
         interp_L = interp1(x(idxL),L(idxL),x,'spline');
-        interp_geo_lat = interp1(x(idxgeolat),geo_lat(idxgeolat),x);
-        interp_geo_lon = interp1(x(idxgeolon),geo_lon(idxgeolon),x);
-        interp_mag_lat = interp1(x(idxmaglat),mag_lat(idxmaglat),x);
+        interp_geo_lat = interp1(x(idxgeolat),geo_lat(idxgeolat),x,'spline');
+        interp_geo_lon = interp1(x(idxgeolon),geo_lon(idxgeolon),x,'spline');
+        interp_geomag_lat = interp1(x(idxgeomaglat),geomag_lat(idxgeomaglat),x,'spline');
+        interp_geomag_lon = interp1(x(idxgeomaglon),geomag_lon(idxgeomaglon),x,'spline');
         interp_MLT = interp1(x(idxMLT),MLT(idxMLT),x,'spline');
         [dst, kp] = gm_interpolate(start_datenum,end_datenum,data);
         
@@ -134,7 +137,8 @@ function interpolate(satellite)
             date_data.McIlwain_L_value = (interp_L(start_point:end_point)');
             date_data.sub_satellite_latitude = (interp_geo_lat(start_point:end_point)');
             date_data.sub_satellite_longitude = (interp_geo_lon(start_point:end_point)');
-            date_data.fofl_magnetic_latitude = (interp_mag_lat(start_point:end_point)');
+            date_data.fofl_geomagnetic_latitude = (interp_geomag_lat(start_point:end_point)');
+            date_data.fofl_geomag_longitude = (interp_geomag_lon(start_point:end_point)');
             date_data.fofl_magnetic_local_time = (interp_MLT(start_point:end_point)');
             date_data.dst = dst(start_time:(end_point+start_time-start_point));
             date_data.kp = kp(start_time:(end_point+start_time-start_point));
