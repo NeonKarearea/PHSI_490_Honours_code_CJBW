@@ -1,4 +1,5 @@
 function mat_flip(location,filename)
+    disp(strcat("flipping matrices in ",filename,".mat..."))
     data = matfile(strcat(location,filename,".mat"));
     information = whos(data);
     data.Properties.Writable = true;

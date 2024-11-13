@@ -31,11 +31,13 @@ Outputs are:
 - cutoff fluxes [Vector]
 - cutoff L-shells [Vector]
 - cutoff datenums [Vector]
-- cutoff MLTs (Magnetic Local Time, the cutoff L-shell is on the day side (1) or night side (0)) [Vector]
-- cutoff Dsts [Vector]
-- cutoff Kps [Vector]
+- cutoff MLTs (Magnetic Local Time, grouped into groups of 3 i.e. 0, 1, and 2 are part of the same group) [Vector]
+- cutoff Dst [Vector]
+- cutoff Kp [Vector]
 - cutoff geographic latitudes [Vector]
 - cutoff geographic longitudes [Vector]
+- cutoff geomagnetic latitudes [Vector]
+- cutoff geomagnetic longtiudes [Vector]
 
 ## event_determine.m
 event_determine.m is a function that find the same information as in data_analyser.m but only for one satellite. Inputs are:
@@ -56,10 +58,12 @@ Outputs are:
 - cutoff L-shells [Vector]
 - cutoff datenums [Vector]
 - cutoff MLTs [Vector]
-- cutoff Dsts [Vector]
-- cutoff Kps [Vector]
+- cutoff Dst [Vector]
+- cutoff Kp [Vector]
 - cutoff geographic latitudes [Vector]
 - cutoff geographic longitudes [Vector]
+- cutoff geomagnetic latitudes [Vector]
+- cutoff geomagnetic longtiudes [Vector]
 
 ## L_finder.m
 L_finder.m is a function that finds the same information as in event_determine.m but onle for one day of data. Inputs are:
@@ -83,10 +87,12 @@ Outputs are:
 - cutoff L-shells [Vector]
 - cutoff datenums [Vector]
 - cutoff MLTs [Vector]
-- cutoff Dsts [Vector]
-- cutoff Kps [Vector]
+- cutoff Dst [Vector]
+- cutoff Kp [Vector]
 - cutoff geographic latitudes [Vector]
 - cutoff geographic longitudes [Vector]
+- cutoff geomagnetic latitudes [Vector]
+- cutoff geomagnetic longitudes [Vector]
 
 ## cutoff_determine_new.m
 cutoff_determine_new actually finds the cutoff flux, L-shell, MLT, Dst, Kp, geographic latitude, and geographic longitude. Inputs are:
@@ -110,6 +116,8 @@ Outputs are:
 - cutoff Kp [Float]
 - cutoff geographic latitude [Float]
 - cutoff geographic longitude [Float]
+- cutoff geomagnetic latitude [Float]
+- cutoff geomagnetic longitude [Float]
 
 ## grad_check.m
 grad_check.m does the gradient check for cutoff_determine_new.m. The inputs are:

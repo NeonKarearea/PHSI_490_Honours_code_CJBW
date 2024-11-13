@@ -1,5 +1,6 @@
-function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,m,...
-    num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
+    geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
+    m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -25,8 +26,10 @@ function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
-        true_lat = NaN;
-        true_lon = NaN;
+        true_geograph_lat = NaN;
+        true_geograph_lon = NaN;
+        true_geomag_lat = NaN;
+        true_geomag_lon = NaN;
     else
         %This will find all the points where the difference in cutoff and
         %measured flux changes sign
@@ -47,8 +50,10 @@ function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,
                     true_MLT = MLT(int64(sign_change_loc(i)));
                     true_dst = dst(int64(sign_change_loc(i)));
                     true_kp = kp(int64(sign_change_loc(i)));
-                    true_lat = lat(int64(sign_change_loc(i)));
-                    true_lon = lon(int64(sign_change_loc(i)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc(i)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc(i)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc(i)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc(i)));
                     break
                 else
                     continue
@@ -66,14 +71,18 @@ function [a,b,c,d,e,f,g] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,lat,lon,
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
-        true_lat = NaN;
-        true_lon = NaN;
+        true_geograph_lat = NaN;
+        true_geograph_lon = NaN;
+        true_geomag_lat = NaN;
+        true_geomag_lon = NaN;
     end
     a = true_flux;
     b = true_L;
     c = true_MLT;
     d = true_dst;
     e = true_kp;
-    f = true_lat;
-    g = true_lon;
+    f = true_geograph_lat;
+    g = true_geograph_lon;
+    h = true_geomag_lat;
+    i = true_geomag_lon;
 end
