@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
+function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = event_determine(start_date,end_date,...
     satellite,n,num_grad,min_flux,min_avg_flux,P)
     %This function takes in a start time and end time and from there can analyse a single event for a given satellite. The satellite data for this project is in the 'POES data PHSI 490' folder and the satellite variable should be written as '{satellite_name}\poes_{satellite_prefix}' (i.e. MetOp1\poes_m01). 'n' is the data resolution for the Omni directional detector used, num_gradient is the number of gradients that will be compared min_flux is the minimum cutoff flux, min_avg_flux is the minimum average flux, and P is the detector
     
@@ -37,7 +37,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
     event_end_time = end_date + datenum(0,0,0,double(max(event.hour)),...
         double(max(event.minute)),double(max(event.second)));
 
-    start_loc = find(event_datenum == event_start_time);
+    start_loc = find(event_datenum == event_start_time | event_datenum == min(event_datenum));
     end_loc = find(event_datenum == event_end_time | event_datenum == max(event_datenum));
     
     if event.Omni_directional_P6(start_loc) == -999
@@ -56,9 +56,10 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
     event_MLT = event.fofl_magnetic_local_time(start_loc:n:end_loc);
     event_dst = event.dst(start_loc:n:end_loc);
     event_kp = event.kp(start_loc:n:end_loc);
+    event_E3_measurements = event.poes_0_E3_corrected_0_30_2_50_MeV(start_loc+1:n:end_loc);
     
     %Finally, we can find where the cutoffs are.
-    [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(event_flux,event_L_shell,event_datenum,...
+    [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = L_finder(event_flux,event_L_shell,event_datenum,...
         event_geograph_lat,event_geograph_lon,event_geomag_lat,event_geomag_lon,event_MLT,event_dst,event_kp,...
-        num_grad,min_flux,min_avg_flux);
+        event_E3_measurements,num_grad,min_flux,min_avg_flux);
 end

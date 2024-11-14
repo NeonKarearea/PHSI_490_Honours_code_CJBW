@@ -1,6 +1,6 @@
 function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
-    m,num_grad,min_flux,min_avg_flux)
+    E3_measurement,m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
     if m == 1
         L_shell = L_shell(end:-1:1);
@@ -14,9 +14,13 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
     L_crit = r/((cosd(70))^2);
     L_70 = find(L_shell>=L_crit, 1);
     avg_flux = mean(flux(L_70:end));
+    avg_E3_measure = mean(E3_measurement(L_70:end));
     
     cutoff_flux = avg_flux/2;
     del_flux = flux-cutoff_flux*ones(size(flux));
+    
+    cutoff_E3_measure = avg_E3_measure/2;
+    del_E3_measure = E3_measurement-cutoff_E3_measure*ones(size(E3_measurement));
     
     %This is to catch any instances where there is no L-shell above
     %the defined L
@@ -42,9 +46,12 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
             if sign_change_loc(i) <= num_grad || sign_change_loc(i) >= length(del_flux)-num_grad
                 continue
             else
-                [avg_grad_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
-                [avg_grad_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
-                if (avg_grad_in < 0 && avg_grad_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0)
+                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
+                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                [avg_grad_E3_in,avg_del_E3_measure_in] = grad_check(del_E3_measure,L_shell,sign_change_loc(i),-1,num_grad);
+                [avg_grad_E3_out,avg_del_E3_measure_out] = grad_check(del_E3_measure,L_shell,sign_change_loc(i),1,num_grad);
+                
+                if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))&&((avg_grad_E3_in > 0 && avg_grad_E3_out < 0)||(avg_del_E3_measure_in >0 && avg_del_E3_measure_out < 0))
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
                     true_MLT = MLT(int64(sign_change_loc(i)));

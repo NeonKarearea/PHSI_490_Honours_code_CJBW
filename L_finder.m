@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,E3_measurements,num_grad,min_flux,min_avg_flux)
     %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     sat_lat_plus = geograph_lat(2:end);
     sat_lat_minus = geograph_lat(1:end-1);
@@ -38,6 +38,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
         geograph_lon_pass{i} = geograph_lon(start_pos:finish_pos);
         geomag_lat_pass{i} = geomag_lat(start_pos:finish_pos);
         geomag_lon_pass{i} = geomag_lon(start_pos:finish_pos);
+        E3_measurements_pass{i} = E3_measurements(start_pos:finish_pos);
         check = 1;
     end
 
@@ -53,6 +54,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
         geograph_lon_examine = geograph_lon_pass{j};
         geomag_lat_examine = geomag_lat_pass{j};
         geomag_lon_examine = geomag_lon_pass{j};
+        E3_measurements_examine = E3_measurements_pass{j};
     
         del_L_loc = find(L_shell_examine == max(L_shell_examine));
     
@@ -76,6 +78,8 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
         geomag_lat_directional{2*j} = geomag_lat_examine(del_L_loc+1:end);
         geomag_lon_directional{(2*j)-1} = geomag_lon_examine(1:del_L_loc);
         geomag_lon_directional{2*j} = geomag_lon_examine(del_L_loc+1:end);
+        E3_measurements_directional{(2*j)-1} = E3_measurements_examine(1:del_L_loc);
+        E3_measurements_directional{2*j} = E3_measurements_examine(del_L_loc+1:end);
     end
 
     %Now we can find the cutoff L_shells
@@ -84,7 +88,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
         [cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_new(L_shell_pass_directional{k},...
             flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
             kp_pass_directional{k},geograph_lat_directional{k},geograph_lon_directional{k},...
-            geomag_lat_directional{k},geograph_lon_directional{k},m,num_grad,min_flux,min_avg_flux);
+            geomag_lat_directional{k},geograph_lon_directional{k},E3_measurements_directional{k},m,num_grad,min_flux,min_avg_flux);
         cutoff_L(k) = cut_L;
         cutoff_flux(k) = cut_flux;
         cutoff_MLTs(k) = cut_MLT;
@@ -140,4 +144,5 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
     k = cutoff_geograph_lon;
     l = cutoff_geomag_lat;
     m = cutoff_geomag_lon;
+    n = E3_measurements_directional;
 end
