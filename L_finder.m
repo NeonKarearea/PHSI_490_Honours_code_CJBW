@@ -81,8 +81,8 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        if k == 260
-            disp("Here is þe stop")
+        if k == 80
+            disp(k)
         end
         [cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
             flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...

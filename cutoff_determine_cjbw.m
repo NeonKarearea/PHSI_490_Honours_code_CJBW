@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
+function [a,b,c,d,e,f,g,h,j] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -39,29 +39,42 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         sign_del_flux_minus = sign(del_flux(2:end));
         sign_change = sign_del_flux_plus ~= sign_del_flux_minus & (~isnan(sign_del_flux_plus) & ~isnan(sign_del_flux_minus));
         sign_change_loc = find(sign_change == 1);
+        sign_change_loc_groups = find(diff(sign_change_loc) >= 4);
         
-        for i = 1:length(sign_change_loc)
-            if sign_change_loc(i) <= num_grad || sign_change_loc(i) >= length(del_flux)-num_grad
+        %This is where I gerrymander the data
+        for i = 1:length(sign_change_loc_groups)+1
+            if isempty(sign_change_loc_groups)
+                sign_change_loc_grouped = sign_change_loc;
+            elseif i == 1
+                sign_change_loc_grouped(i,1) = floor(median(sign_change_loc(1:sign_change_loc_groups(i))));
+            elseif i == length(sign_change_loc_groups)+1
+                sign_change_loc_grouped(i,1) = floor(median(sign_change_loc(sign_change_loc_groups(i-1)+1:end)));
+            else
+                sign_change_loc_grouped(i,1) = floor(median(sign_change_loc(sign_change_loc_groups(i-1)+1:sign_change_loc_groups(i))));
+            end
+        end
+        
+        %This is where we try to find the cutoff location
+        for j = 1:length(sign_change_loc_grouped)
+            if sign_change_loc_grouped(j) <= num_grad || sign_change_loc_grouped(j) >= length(del_flux)-num_grad
                 continue
             else
-                [avg_grad_in(i),avg_del_flux_in(i)] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
-                [avg_grad_out(i),avg_del_flux_out(i)] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                [avg_grad_in(j),avg_del_flux_in(j)] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),-1,num_grad);
+                [avg_grad_out(j),avg_del_flux_out(j)] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),1,num_grad);
             end
         end
         
         if exist("avg_grad_in","var")
             avg_grads_and_fluxes = ([avg_grad_in;avg_grad_out;avg_del_flux_in;avg_del_flux_out])';
             point_validity = double((avg_grads_and_fluxes(:,1)<0 & avg_grads_and_fluxes(:,2)>0)&(avg_grads_and_fluxes(:,3)<0 & avg_grads_and_fluxes(:,4)>0));
-            idx = find(point_validity == 0);
-            point_validity(idx) = -1.*idx;
             point_difference = diff(point_validity);
-            attempted_location = find(point_validity(1:end-1) == 1 & point_difference == 0,1);
+            attempted_location = find((point_validity(1:end-1) == 1 & point_difference == 0),1);
             if isempty(find(point_validity == 1,1))
                 cutoff_location = 1;
             elseif isempty(attempted_location)
-                cutoff_location = int64(sign_change_loc(find(point_validity==1,1)));
+                cutoff_location = int64(floor(median(sign_change_loc_grouped(point_validity==1))));
             else
-                cutoff_location = int64(sign_change_loc(point_validity(attempted_location)));
+                cutoff_location = int64(sign_change_loc_grouped(point_validity(attempted_location)));
             end
             
             true_flux = flux(cutoff_location);
@@ -98,5 +111,5 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     f = true_geograph_lat;
     g = true_geograph_lon;
     h = true_geomag_lat;
-    i = true_geomag_lon;
+    j = true_geomag_lon;
 end
