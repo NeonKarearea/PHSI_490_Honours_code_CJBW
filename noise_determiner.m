@@ -3,9 +3,9 @@ function [a,b,c] = noise_determiner
     delete(gcp('nocreate'))
     parpool();
 
-    cut_flux = 5:1:15;
-    cut_avg_flux = 10:1:30;
-    num_grad = 1:1:30;
+    cut_flux = 0:0.1:2.5;
+    cut_avg_flux = 0:0.1:2.5;
+    num_grad = 7:1:7;
 
     cutoff_fluxes = cell(length(cut_flux),length(cut_avg_flux));
     cutoff_L_shells = cell(length(cut_flux),length(cut_avg_flux));
@@ -31,7 +31,7 @@ function [a,b,c] = noise_determiner
             cutoff_fluxes_column{j} = cutoff_fluxes_row;
             cutoff_L_shells_column{j} = cutoff_L_shells_row;
             cutoff_datenums_column{j} = cutoff_datenums_row;
-            disp(strcat("Found the cutoffs for min_cutoff_flux = ",num2str(j+4)," for ",num2str(i)," gradients around the cutoff point."))
+            disp(strcat("Found the cutoffs for min_cutoff_flux = ",num2str(cut_flux(j))," for ",num2str(i)," gradients around the cutoff point."))
         end
 
         for l = 1:length(cut_flux)
