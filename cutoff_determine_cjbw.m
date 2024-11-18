@@ -52,14 +52,12 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         if exist("avg_grad_in","var")
             avg_grads_and_fluxes = ([avg_grad_in;avg_grad_out;avg_del_flux_in;avg_del_flux_out])';
             point_validity = double((avg_grads_and_fluxes(:,1)<0 & avg_grads_and_fluxes(:,2)>0)&(avg_grads_and_fluxes(:,3)<0 & avg_grads_and_fluxes(:,4)>0));
-            idx = find(point_validity == 0);
-            point_validity(idx) = -1.*idx;
             point_difference = diff(point_validity);
-            attempted_location = find(point_validity(1:end-1) == 1 & point_difference == 0,1);
+            attempted_location = find((point_validity(1:end-1) == 1 & point_difference == 0),1);
             if isempty(find(point_validity == 1,1))
                 cutoff_location = 1;
             elseif isempty(attempted_location)
-                cutoff_location = int64(sign_change_loc(find(point_validity==1,1)));
+                cutoff_location = int64(sign_change_loc(find(point_validity==1,1,'last')));
             else
                 cutoff_location = int64(sign_change_loc(point_validity(attempted_location)));
             end
