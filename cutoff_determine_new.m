@@ -45,7 +45,7 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
                 [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
                 [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
                 
-                if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))%&&(sign(avg_grad_E3_in) <= 0 && sign(avg_grad_E3_in) == sign(avg_grad_E3_out))
+                if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))
                     true_flux = flux(int64(sign_change_loc(i)));
                     true_L = L_shell(int64(sign_change_loc(i)));
                     true_MLT = MLT(int64(sign_change_loc(i)));
@@ -66,7 +66,13 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
     %This is a final catch in case the cutoff flux isn't found and removes
     %passes that at any point touch the SAMA
     front_half_flux = flux(1:floor(length(flux)/2));
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)
+    try
+        last_min_flux_L = L_shell(find((flux == min(flux)&L_shell<=true_L),1,'last'));
+        del_L = true_L-last_min_flux_L;
+    catch
+        del_L = NaN;
+    end
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)||(isempty(del_L)||isnan(del_L)||del_L>=last_min_flux_L)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;

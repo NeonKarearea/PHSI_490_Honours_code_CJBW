@@ -102,6 +102,10 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = data_analyser(start_year,start_month,...
     non_nan_geomag_lat = geomag_lat(non_nans);
     non_nan_geomag_lon = geomag_lon(non_nans);
     
+    %This removes the outlier points
+    %delta_L = diff(non_nan_cutoff_L_shells);
+    %non_nan_cutoff_L_shells(abs(delta_L)>1) = NaN;
+    
     sorted_non_nan_cutoff_datenums = sort(non_nan_cutoff_datenums);
     sorted_non_nan_cutoff_datenums = [sorted_non_nan_cutoff_datenums(diff(sorted_non_nan_cutoff_datenums)~=0),...
         sorted_non_nan_cutoff_datenums(end)];
@@ -132,6 +136,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = data_analyser(start_year,start_month,...
     
     %This will let the user know a) which satellites have been skipped and
     %b) which ones have incomplete data.
+    
     if print == 1
         disp(strcat(num2str(skipped_sat)," satellites didn't have the data. These satellites were:"))
         disp(skipped_satellite)
