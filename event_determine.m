@@ -37,7 +37,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
     event_end_time = end_date + datenum(0,0,0,double(max(event.hour)),...
         double(max(event.minute)),double(max(event.second)));
 
-    start_loc = find(event_datenum == event_start_time);
+    start_loc = find(event_datenum == event_start_time | event_datenum == min(event_datenum));
     end_loc = find(event_datenum == event_end_time | event_datenum == max(event_datenum));
     
     if event.Omni_directional_P6(start_loc) == -999
@@ -56,6 +56,8 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
     event_MLT = event.fofl_magnetic_local_time(start_loc:n:end_loc);
     event_dst = event.dst(start_loc:n:end_loc);
     event_kp = event.kp(start_loc:n:end_loc);
+    %event_E3_measurements = event.poes_0_E3_corrected_0_30_2_50_MeV(start_loc+1:n:end_loc);
+    %event_P5_measurements = event.poes_0_P5_corrected_2_628_MeV(start_loc+1:n:end_loc);
     
     %Finally, we can find where the cutoffs are.
     [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(event_flux,event_L_shell,event_datenum,...
