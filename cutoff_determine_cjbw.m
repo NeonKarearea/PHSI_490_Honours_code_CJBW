@@ -45,7 +45,7 @@ function [a,b,c,d,e,f,g,h,j] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         %This is where I gerrymander the data (i.e. packing)
         for i = 1:length(sign_change_loc_groups)+1
             if isempty(sign_change_loc_groups)
-                sign_change_loc_grouped = sign_change_loc;
+                sign_change_loc_grouped = median(sign_change_loc);
             elseif i == 1
                 sign_change_loc_grouped(i,1) = floor(median(sign_change_loc(1:sign_change_loc_groups(i))));
             elseif i == length(sign_change_loc_groups)+1
@@ -57,7 +57,9 @@ function [a,b,c,d,e,f,g,h,j] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         
         %This is where we try to find the cutoff location
         for j = 1:length(sign_change_loc_grouped)
-            if sign_change_loc_grouped(j) <= num_grad || sign_change_loc_grouped(j) >= length(del_flux)-num_grad
+            if isnan(sign_change_loc_grouped)
+                continue
+            elseif sign_change_loc_grouped(j) <= num_grad || sign_change_loc_grouped(j) >= length(del_flux)-num_grad
                 continue
             else
                 [avg_grad_in(j),avg_del_flux_in(j)] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),-1,num_grad);
@@ -96,7 +98,7 @@ function [a,b,c,d,e,f,g,h,j] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     %passes that at any point touch the SAMA
     front_half_flux = flux(1:floor(length(flux)/2));
     try
-        last_min_flux_L = L_shell(find((flux == min(flux)&L_shell<=true_L),1,'last'));
+        last_min_flux_L = L_shell(find((flux == min(flux)&L_shell<=L_shell(sign_change_loc_grouped(1))),1,'last'));
         del_L = true_L-last_min_flux_L;
     catch
         del_L = NaN;
