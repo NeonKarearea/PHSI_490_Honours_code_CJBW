@@ -6,8 +6,6 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         L_shell = L_shell(end:-1:1);
         flux = flux(end:-1:1);
     end
-    cutoff_location=1;
-    
     r_earth = 6.371e6; %meters, radius of Earth
     r_sat = 8.50e5; %meters, average orbital height of the POES satellites
     
@@ -20,6 +18,21 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     cutoff_flux = avg_flux/2;
     del_flux = flux-cutoff_flux*ones(size(flux));
 
+    smoothed_flux = movmean(flux,8,'omitnan');
+    local_maxima = find(islocalmax(smoothed_flux)&flux>=min_flux);
+    %local_minima = find(islocalmin(smoothed_flux)&flux>=min_flux);
+    %minima_condition = flux(local_minima)<cutoff_flux&L_shell(local_minima)<4;
+    %plot(L_shell,flux)
+    
+    
+    if isempty(local_maxima)% || isempty(local_minima)
+        avg_flux = NaN;
+    elseif flux(local_maxima(1)) < cutoff_flux && flux(local_maxima(1)) > cutoff_flux/2
+        avg_flux = NaN;
+    %elseif ~isempty(find(minima_condition==1,1))
+    %    avg_flux = NaN;
+    end
+    
     %This is to catch any instances where there is no L-shell above
     %the defined L
     if isnan(avg_flux) == 1
@@ -44,40 +57,31 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
             if sign_change_loc(i) <= num_grad || sign_change_loc(i) >= length(del_flux)-num_grad
                 continue
             else
-                [avg_grad_in(i),avg_del_flux_in(i)] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
-                [avg_grad_out(i),avg_del_flux_out(i)] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
+                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                
+                if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))%&&(sign(avg_grad_E3_in) <= 0 && sign(avg_grad_E3_in) == sign(avg_grad_E3_out))
+                    true_flux = flux(int64(sign_change_loc(i)));
+                    true_L = L_shell(int64(sign_change_loc(i)));
+                    true_MLT = MLT(int64(sign_change_loc(i)));
+                    true_dst = dst(int64(sign_change_loc(i)));
+                    true_kp = kp(int64(sign_change_loc(i)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc(i)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc(i)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc(i)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc(i)));
+                    break
+                else
+                    continue
+                end
             end
-        end
-        
-        if exist("avg_grad_in","var")
-            avg_grads_and_fluxes = ([avg_grad_in;avg_grad_out;avg_del_flux_in;avg_del_flux_out])';
-            point_validity = double((avg_grads_and_fluxes(:,1)<0 & avg_grads_and_fluxes(:,2)>0)&(avg_grads_and_fluxes(:,3)<0 & avg_grads_and_fluxes(:,4)>0));
-            point_difference = diff(point_validity);
-            attempted_location = find((point_validity(1:end-1) == 1 & point_difference == 0),1);
-            if isempty(find(point_validity == 1,1))
-                cutoff_location = 1;
-            elseif isempty(attempted_location)
-                cutoff_location = int64(sign_change_loc(find(point_validity==1,1,'last')));
-            else
-                cutoff_location = int64(sign_change_loc(point_validity(attempted_location)));
-            end
-            
-            true_flux = flux(cutoff_location);
-            true_L = L_shell(cutoff_location);
-            true_MLT = MLT(cutoff_location);
-            true_dst = dst(cutoff_location);
-            true_kp = kp(cutoff_location);
-            true_geograph_lat = geograph_lat(cutoff_location);
-            true_geograph_lon = geograph_lon(cutoff_location);
-            true_geomag_lat = geomag_lat(cutoff_location);
-            true_geomag_lon = geomag_lon(cutoff_location);
         end
     end
     
     %This is a final catch in case the cutoff flux isn't found and removes
     %passes that at any point touch the SAMA
     front_half_flux = flux(1:floor(length(flux)/2));
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)||cutoff_location==1
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
