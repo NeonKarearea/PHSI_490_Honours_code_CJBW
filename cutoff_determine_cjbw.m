@@ -18,8 +18,16 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     cutoff_flux = avg_flux/2;
     del_flux = flux-cutoff_flux*ones(size(flux));
 
-    smoothed_flux = movmean(flux,8,'omitnan');
+    smoothed_flux = movmean(flux,17,'omitnan');
     local_maxima = find(islocalmax(smoothed_flux)&flux>=min_flux);
+    try
+        del_smooth_flux = smoothed_flux(local_maxima(1)+7)-smoothed_flux(local_maxima(1));
+        del_L_shell = L_shell(local_maxima(1)+7)-L_shell(local_maxima(1));
+        grad_out_1 = del_smooth_flux/del_L_shell;
+        grad_out_1 = ceil(grad_out_1/10)*10;
+    catch
+        grad_out_1 = -1;
+    end
     %local_minima = find(islocalmin(smoothed_flux)&flux>=min_flux);
     %minima_condition = flux(local_minima)<cutoff_flux&L_shell(local_minima)<4;
     %plot(L_shell,flux)
@@ -27,10 +35,10 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     
     if isempty(local_maxima)% || isempty(local_minima)
         avg_flux = NaN;
-    elseif flux(local_maxima(1)) < cutoff_flux && flux(local_maxima(1)) > cutoff_flux/2
+    elseif flux(local_maxima(1)) < cutoff_flux && flux(local_maxima(1))>cutoff_flux/2
         avg_flux = NaN;
-    %elseif ~isempty(find(minima_condition==1,1))
-    %    avg_flux = NaN;
+    elseif flux(local_maxima(1))<cutoff_flux/2 && grad_out_1 <= 0
+        avg_flux = NaN;
     end
     
     %This is to catch any instances where there is no L-shell above
@@ -53,23 +61,45 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         sign_change = sign_del_flux_plus ~= sign_del_flux_minus & (~isnan(sign_del_flux_plus) & ~isnan(sign_del_flux_minus));
         sign_change_loc = find(sign_change == 1);
         
-        for i = 1:length(sign_change_loc)
-            if sign_change_loc(i) <= num_grad || sign_change_loc(i) >= length(del_flux)-num_grad
+        
+        
+        for j = 1:length(sign_change_loc_grouped_grouped)
+            maxima_delta = abs(local_maxima - sign_change_loc_grouped(j).*ones(length(local_maxima),1));
+            maxima_delta_location = find(maxima_delta == min(maxima_delta),1);
+            if sign_change_loc_grouped(j) <= num_grad || sign_change_loc_grouped(j) >= length(del_flux)-num_grad
                 continue
+            elseif maxima_delta(maxima_delta_location) <= 14 && L_shell(sign_change_loc_grouped(j)) < 4
+                [avg_grad_omni_in] = grad_check(flux,L_shell,local_maxima(maxima_delta_location),-1,num_grad);
+                [avg_grad_omni_out] = grad_check(flux,L_shell,local_maxima(maxima_delta_location),1,num_grad);
+                
+                if sign(avg_grad_omni_in) ~= sign(avg_grad_omni_out) || (sign(avg_grad_omni_in) ~= 0 && sign(avg_grad_omni_out) < 0)
+                    continue
+                else
+                    true_flux = flux(int64(sign_change_loc_grouped(j)));
+                    true_L = L_shell(int64(sign_change_loc_grouped(j)));
+                    true_MLT = MLT(int64(sign_change_loc_grouped(j)));
+                    true_dst = dst(int64(sign_change_loc_grouped(j)));
+                    true_kp = kp(int64(sign_change_loc_grouped(j)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(j)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(j)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(j)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(j)));
+                    break
+                end
             else
-                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc(i),-1,num_grad);
-                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc(i),1,num_grad);
+                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),-1,num_grad);
+                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),1,num_grad);
                 
                 if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))%&&(sign(avg_grad_E3_in) <= 0 && sign(avg_grad_E3_in) == sign(avg_grad_E3_out))
-                    true_flux = flux(int64(sign_change_loc(i)));
-                    true_L = L_shell(int64(sign_change_loc(i)));
-                    true_MLT = MLT(int64(sign_change_loc(i)));
-                    true_dst = dst(int64(sign_change_loc(i)));
-                    true_kp = kp(int64(sign_change_loc(i)));
-                    true_geograph_lat = geograph_lat(int64(sign_change_loc(i)));
-                    true_geograph_lon = geograph_lon(int64(sign_change_loc(i)));
-                    true_geomag_lat = geomag_lat(int64(sign_change_loc(i)));
-                    true_geomag_lon = geomag_lon(int64(sign_change_loc(i)));
+                    true_flux = flux(int64(sign_change_loc_grouped(j)));
+                    true_L = L_shell(int64(sign_change_loc_grouped(j)));
+                    true_MLT = MLT(int64(sign_change_loc_grouped(j)));
+                    true_dst = dst(int64(sign_change_loc_grouped(j)));
+                    true_kp = kp(int64(sign_change_loc_grouped(j)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(j)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(j)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(j)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(j)));
                     break
                 else
                     continue
@@ -79,9 +109,10 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     end
     
     %This is a final catch in case the cutoff flux isn't found and removes
-    %passes that at any point touch the SAMA
+    %passes that at any point touch the SAMA and removes clearly bullshit
+    %points (i.e. a cutoff L > 20 is clearly wrong)
     front_half_flux = flux(1:floor(length(flux)/2));
-    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||(length(find(front_half_flux<=min_flux))<num_grad)
+    if ~exist('true_flux','var')||~exist('true_L','var')||true_flux<=min_flux||avg_flux<=min_avg_flux||true_L>20||(length(find(front_half_flux<=min_flux))<num_grad)
         true_flux = NaN;
         true_L = NaN;
         true_MLT = NaN;
