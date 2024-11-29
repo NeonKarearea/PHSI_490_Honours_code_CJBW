@@ -20,6 +20,7 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
 
     smoothed_flux = movmean(flux,17,'omitnan');
     local_maxima = find(islocalmax(smoothed_flux)&flux>=min_flux);
+    
     try
         del_smooth_flux = smoothed_flux(local_maxima(1)+7)-smoothed_flux(local_maxima(1));
         del_L_shell = L_shell(local_maxima(1)+7)-L_shell(local_maxima(1));
@@ -28,16 +29,12 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
     catch
         grad_out_1 = -1;
     end
-    %local_minima = find(islocalmin(smoothed_flux)&flux>=min_flux);
-    %minima_condition = flux(local_minima)<cutoff_flux&L_shell(local_minima)<4;
-    %plot(L_shell,flux)
     
-    
-    if isempty(local_maxima)% || isempty(local_minima)
+    if isempty(local_maxima)
         avg_flux = NaN;
     elseif flux(local_maxima(1)) < cutoff_flux && flux(local_maxima(1))>cutoff_flux/2
         avg_flux = NaN;
-    elseif flux(local_maxima(1))<cutoff_flux/2 && grad_out_1 <= 0
+    elseif flux(local_maxima(1))<cutoff_flux/2 && grad_out_1 == 0
         avg_flux = NaN;
     end
     
@@ -60,46 +57,45 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw(L_shell,flux,MLT,dst,kp,...
         sign_del_flux_minus = sign(del_flux(2:end));
         sign_change = sign_del_flux_plus ~= sign_del_flux_minus & (~isnan(sign_del_flux_plus) & ~isnan(sign_del_flux_minus));
         sign_change_loc = find(sign_change == 1);
-        
-        
-        
-        for j = 1:length(sign_change_loc_grouped_grouped)
-            maxima_delta = abs(local_maxima - sign_change_loc_grouped(j).*ones(length(local_maxima),1));
+        sign_change_loc_grouped = grouper(sign_change_loc,8);
+
+        for i = 1:length(sign_change_loc_grouped)
+            maxima_delta = abs(local_maxima - sign_change_loc_grouped(i).*ones(length(local_maxima),1));
             maxima_delta_location = find(maxima_delta == min(maxima_delta),1);
-            if sign_change_loc_grouped(j) <= num_grad || sign_change_loc_grouped(j) >= length(del_flux)-num_grad
+            if isempty(maxima_delta_location)||sign_change_loc_grouped(i) <= num_grad || sign_change_loc_grouped(i) >= length(del_flux)-num_grad
                 continue
-            elseif maxima_delta(maxima_delta_location) <= 14 && L_shell(sign_change_loc_grouped(j)) < 4
+            elseif maxima_delta(maxima_delta_location) <= 14 && L_shell(sign_change_loc_grouped(i)) < 4
                 [avg_grad_omni_in] = grad_check(flux,L_shell,local_maxima(maxima_delta_location),-1,num_grad);
                 [avg_grad_omni_out] = grad_check(flux,L_shell,local_maxima(maxima_delta_location),1,num_grad);
                 
                 if sign(avg_grad_omni_in) ~= sign(avg_grad_omni_out) || (sign(avg_grad_omni_in) ~= 0 && sign(avg_grad_omni_out) < 0)
                     continue
                 else
-                    true_flux = flux(int64(sign_change_loc_grouped(j)));
-                    true_L = L_shell(int64(sign_change_loc_grouped(j)));
-                    true_MLT = MLT(int64(sign_change_loc_grouped(j)));
-                    true_dst = dst(int64(sign_change_loc_grouped(j)));
-                    true_kp = kp(int64(sign_change_loc_grouped(j)));
-                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(j)));
-                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(j)));
-                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(j)));
-                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(j)));
+                    true_flux = flux(int64(sign_change_loc_grouped(i)));
+                    true_L = L_shell(int64(sign_change_loc_grouped(i)));
+                    true_MLT = MLT(int64(sign_change_loc_grouped(i)));
+                    true_dst = dst(int64(sign_change_loc_grouped(i)));
+                    true_kp = kp(int64(sign_change_loc_grouped(i)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(i)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(i)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(i)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(i)));
                     break
                 end
             else
-                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),-1,num_grad);
-                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc_grouped(j),1,num_grad);
+                [avg_grad_omni_in,avg_del_flux_in] = grad_check(del_flux,L_shell,sign_change_loc_grouped(i),-1,num_grad);
+                [avg_grad_omni_out,avg_del_flux_out] = grad_check(del_flux,L_shell,sign_change_loc_grouped(i),1,num_grad);
                 
                 if ((avg_grad_omni_in < 0 && avg_grad_omni_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))%&&(sign(avg_grad_E3_in) <= 0 && sign(avg_grad_E3_in) == sign(avg_grad_E3_out))
-                    true_flux = flux(int64(sign_change_loc_grouped(j)));
-                    true_L = L_shell(int64(sign_change_loc_grouped(j)));
-                    true_MLT = MLT(int64(sign_change_loc_grouped(j)));
-                    true_dst = dst(int64(sign_change_loc_grouped(j)));
-                    true_kp = kp(int64(sign_change_loc_grouped(j)));
-                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(j)));
-                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(j)));
-                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(j)));
-                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(j)));
+                    true_flux = flux(int64(sign_change_loc_grouped(i)));
+                    true_L = L_shell(int64(sign_change_loc_grouped(i)));
+                    true_MLT = MLT(int64(sign_change_loc_grouped(i)));
+                    true_dst = dst(int64(sign_change_loc_grouped(i)));
+                    true_kp = kp(int64(sign_change_loc_grouped(i)));
+                    true_geograph_lat = geograph_lat(int64(sign_change_loc_grouped(i)));
+                    true_geograph_lon = geograph_lon(int64(sign_change_loc_grouped(i)));
+                    true_geomag_lat = geomag_lat(int64(sign_change_loc_grouped(i)));
+                    true_geomag_lon = geomag_lon(int64(sign_change_loc_grouped(i)));
                     break
                 else
                     continue
