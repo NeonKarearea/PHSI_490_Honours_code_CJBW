@@ -74,7 +74,9 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_three(L_shell,flux,MLT,dst,
             offset = max_loc;
             diff_flux_local = smoothed_flux(max_loc)-smoothed_flux(min_loc);
             is_in = ismember(sign_change_loc_grouped,min_loc:1:max_loc);
-            if isempty(find(is_in==1,1))
+            if length(sign_change_loc_grouped) == 1
+                test_point = sign_change_loc_grouped(1);
+            elseif isempty(find(is_in==1,1))
                 test_point = 1;
             elseif diff_flux_local/diff_flux_true >=0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4
                 try
