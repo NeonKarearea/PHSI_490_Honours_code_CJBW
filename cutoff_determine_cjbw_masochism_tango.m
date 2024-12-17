@@ -1,4 +1,5 @@
-function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_three(L_shell,flux,MLT,dst,kp,...
+
+function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_masochism_tango(L_shell,flux,MLT,dst,kp,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -74,57 +75,71 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_three(L_shell,flux,MLT,dst,
             offset = max_loc;
             diff_flux_local = smoothed_flux(max_loc)-smoothed_flux(min_loc);
             is_in = ismember(sign_change_loc_grouped,min_loc:1:max_loc);
-            if length(sign_change_loc_grouped) == 1
+            if (length(sign_change_loc_grouped) == 1 && length(local_maxima(local_maxima <= sign_change_loc_grouped)) == 1)
                 test_point = sign_change_loc_grouped(1);
+                tested_point = test_point;
             elseif isempty(find(is_in==1,1))
                 test_point = 1;
-            elseif diff_flux_local/diff_flux_true >=0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4
+            elseif diff_flux_local/diff_flux_true >= 0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4
                 try
-                    diff_flux_next = smoothed_flux(local_maxima_grouped(j)) - min(smoothed_flux(local_maxima_grouped(j):local_maxima_grouped(j+1)));
+                    diff_flux_previous_max = smoothed_flux(local_maxima_grouped(j)) - min(smoothed_flux(local_maxima_grouped(j):local_maxima_grouped(j+1)));
                 catch
-                    diff_flux_next = NaN;
+                    diff_flux_previous_max = NaN;
                 end
-                if diff_flux_local/diff_flux_next >= 0.5 && diff_flux_next/diff_flux_local >= 0.5
+                if diff_flux_local/diff_flux_previous_max >= 0.5 && diff_flux_previous_max/diff_flux_local >= 0.5
+                    tested_point = sign_change_loc_grouped(find(is_in==1,1,'last'));
                     continue
                 else
-                    test_point = sign_change_loc_grouped(find(is_in==1,1));
+                    test_point = sign_change_loc_grouped(is_in==1,1);
+                    tested_point = test_point;
                 end
                 
-            elseif diff_flux_local/diff_flux_true >=0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1)))>6
+            elseif diff_flux_local/diff_flux_true >= 0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1,'last')))>6
                 try
-                    diff_flux_previous = smoothed_flux(local_maxima_grouped(j-1)) - min(smoothed_flux(local_maxima_grouped(j-1):local_maxima_grouped(j)));
+                    diff_flux_previous_max = smoothed_flux(local_maxima_grouped(j-1));
                 catch
-                    diff_flux_previous = NaN;
+                    diff_flux_previous_max = NaN;
                 end
-                if diff_flux_local/diff_flux_previous >= 0.9
+                %if (diff_flux_local/diff_flux_previous >= 0.01 && diff_flux_previous/diff_flux_local >= 0.01)
+                %    continue
+                if (exist('tested_point','var') && tested_point(end) ~= sign_change_loc_grouped(find(is_in==1,1)-1))||...
+                        (~exist('tested_point','var') && sign_change_loc_grouped(find(is_in==1,1)) ~= sign_change_loc_grouped(1))||...
+                        diff_flux_previous_max/cutoff_flux >= 0.5
                     continue
                 else
-                    test_point = sign_change_loc_grouped(find(is_in==1,1));
+                    test_point = sign_change_loc_grouped(is_in==1);
+                    tested_point = test_point;
                 end
                 
-            elseif diff_flux_local/diff_flux_true >=0.6
-                test_point = sign_change_loc_grouped(find(is_in==1,1));
+            elseif diff_flux_local/diff_flux_true >= 0.6
+                test_point = sign_change_loc_grouped(is_in==1);
+                tested_point = test_point;
             else
                 test_point = 1;
+                tested_point = 1;
             end
             
             %This does the original test
-            if test_point == 1 || test_point <= num_grad || test_point >= length(flux)-num_grad
+            if (length(test_point) == 1 && test_point == 1) || test_point(1) <= num_grad || test_point(end) >= length(flux)-num_grad
                 continue
             else
                 [avg_grad_in,avg_del_flux_in] = grad_check(del_flux,L_shell,test_point,-1,num_grad);
                 [avg_grad_out,avg_del_flux_out] = grad_check(del_flux,L_shell,test_point,1,num_grad);
                 
-                if (avg_grad_in < 0 && avg_grad_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0)
-                    true_flux = flux(int64(test_point));
-                    true_L = L_shell(int64(test_point));
-                    true_MLT = MLT(int64(test_point));
-                    true_dst = dst(int64(test_point));
-                    true_kp = kp(int64(test_point));
-                    true_geograph_lat = geograph_lat(int64(test_point));
-                    true_geograph_lon = geograph_lon(int64(test_point));
-                    true_geomag_lat = geomag_lat(int64(test_point));
-                    true_geomag_lon = geomag_lon(int64(test_point));
+                grads_and_dels = [avg_grad_in',avg_grad_out',avg_del_flux_in',avg_del_flux_out'];
+                location_validity = (grads_and_dels(:,1)<0&grads_and_dels(:,2)>0)|(grads_and_dels(:,3)<0&grads_and_dels(:,4)>0);
+                
+                if ~isempty(find(location_validity==1,1))%((avg_grad_in < 0 && avg_grad_out > 0)||(avg_del_flux_in < 0 && avg_del_flux_out > 0))
+                    location = test_point(find(location_validity==1,1));
+                    true_flux = flux(int64(location));
+                    true_L = L_shell(int64(location));
+                    true_MLT = MLT(int64(location));
+                    true_dst = dst(int64(location));
+                    true_kp = kp(int64(location));
+                    true_geograph_lat = geograph_lat(int64(location));
+                    true_geograph_lon = geograph_lon(int64(location));
+                    true_geomag_lat = geomag_lat(int64(location));
+                    true_geomag_lon = geomag_lon(int64(location));
                     break
                 else
                     continue

@@ -25,6 +25,11 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = event_determine(start_date,end_date,...
         end
     end
     
+    if ~exist('event','var')
+        disp(start_date)
+        disp(end_date)
+        disp(satellite)
+    end
     %This formats the time into datenum.
     event_datenum = datenum(double(event.year),1,...
         double(event.day_of_year),double(event.hour),...
