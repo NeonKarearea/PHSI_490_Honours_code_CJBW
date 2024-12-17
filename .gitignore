@@ -4,6 +4,7 @@ files_from_craig/
 PEOS data PHSI 490/
 Readings for PHSI490/
 Intermag_data/
+paper_data_or_figures/
 *.mat
 *.pdf
 *.zip

@@ -1,5 +1,5 @@
 
-function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_masochism_tango(L_shell,flux,MLT,dst,kp,...
+function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_cjbw_masochism_tango(L_shell,flux,MLT,dst,kp,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -163,13 +163,14 @@ function [a,b,c,d,e,f,g,h,i] = cutoff_determine_cjbw_masochism_tango(L_shell,flu
         true_geomag_lat = NaN;
         true_geomag_lon = NaN;
     end
-    a = true_flux;
-    b = true_L;
-    c = true_MLT;
-    d = true_dst;
-    e = true_kp;
-    f = true_geograph_lat;
-    g = true_geograph_lon;
-    h = true_geomag_lat;
-    i = true_geomag_lon;
+    a = cutoff_flux;
+    b = true_flux;
+    c = true_L;
+    d = true_MLT;
+    e = true_dst;
+    f = true_kp;
+    g = true_geograph_lat;
+    h = true_geograph_lon;
+    i = true_geomag_lat;
+    j = true_geomag_lon;
 end
