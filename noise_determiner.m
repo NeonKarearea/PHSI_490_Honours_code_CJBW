@@ -1,11 +1,10 @@
-function [a,b,c] = noise_determiner
-    %This allows the code to be run
-    delete(gcp('nocreate'))
-    parpool();
+function [a,b,c] = noise_determiner(start_year,start_month,start_day,end_year,end_month,end_day)
+    %delete(gcp('nocreate'))
+    %parpool();
 
-    cut_flux = 0:0.1:2.5;
-    cut_avg_flux = 0:0.1:2.5;
-    num_grad = 7:1:7;
+    cut_flux = 9;
+    cut_avg_flux = 15;
+    num_grad = 0:1:30;
 
     cutoff_fluxes = cell(length(cut_flux),length(cut_avg_flux));
     cutoff_L_shells = cell(length(cut_flux),length(cut_avg_flux));
@@ -22,7 +21,7 @@ function [a,b,c] = noise_determiner
             cutoff_datenums_row = cell(1,length(cut_avg_flux));
             for k = 1:length(cut_avg_flux)
                 [~,~,~,cutoff_flux,cutoff_L_shell,cutoff_datenum]=...
-                    data_analyser(2012,01,23,2012,01,31,2,i,cut_flux(j),cut_avg_flux(k),'P6',0);
+                    data_analyser(start_year,start_month,start_day,end_year,end_month,end_day,2,i,cut_flux(j),cut_avg_flux(k),'P6',0);
 
                 cutoff_fluxes_row{k} = cutoff_flux;
                 cutoff_L_shells_row{k} = cutoff_L_shell;

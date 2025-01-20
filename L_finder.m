@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,num_grad,min_flux,min_avg_flux)
     %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     sat_lat_plus = geograph_lat(2:end);
     sat_lat_minus = geograph_lat(1:end-1);
@@ -81,15 +81,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        if k == 60
-            disp(k)
-        end
-        [cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_cjbw(L_shell_pass_directional{k},...
+        [original_cut_flux,cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_cjbw_masochism_tango(L_shell_pass_directional{k},...
             flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
             kp_pass_directional{k},geograph_lat_directional{k},geograph_lon_directional{k},...
             geomag_lat_directional{k},geograph_lon_directional{k},m,num_grad,min_flux,min_avg_flux);
-        cutoff_L(k) = cut_L;
+        original_cutoff_flux(k) = original_cut_flux;
         cutoff_flux(k) = cut_flux;
+        cutoff_L(k) = cut_L;
         cutoff_MLTs(k) = cut_MLT;
         cutoff_dst(k) = cut_dst;
         cutoff_kp(k) = cut_kp;
@@ -128,19 +126,20 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m] = L_finder(flux,L_shell,datenums,geograph_l
         end
     end
     
-    cutoff_MLTs = mod((floor(cutoff_MLTs./45)),8);
-
+    cutoff_MLTs = mod(floor(cutoff_MLTs./45),8);
+    
     a = flux_pass_directional;
     b = L_shell_pass_directional;
     c = datenum_pass_directional;
-    d = cutoff_flux;
-    e = cutoff_L;
-    f = cutoff_datenum;
-    g = cutoff_MLTs;
-    h = cutoff_dst;
-    i = cutoff_kp;
-    j = cutoff_geograph_lat;
-    k = cutoff_geograph_lon;
-    l = cutoff_geomag_lat;
-    m = cutoff_geomag_lon;
+    d = original_cutoff_flux;
+    e = cutoff_flux;
+    f = cutoff_L;
+    g = cutoff_datenum;
+    h = cutoff_MLTs;
+    i = cutoff_dst;
+    j = cutoff_kp;
+    k = cutoff_geograph_lat;
+    l = cutoff_geograph_lon;
+    m = cutoff_geomag_lat;
+    n = cutoff_geomag_lon;
 end

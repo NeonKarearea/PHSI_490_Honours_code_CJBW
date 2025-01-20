@@ -1,19 +1,23 @@
-function [a,b] = grad_check(del_flux,L_shell,i,operation,num_grad)
+function [a,b] = grad_check(del_flux,L_shell,locations,operation,num_grad)
     abs_del_flux = abs(del_flux);
-    if operation == 1
-        for j = 1:num_grad
-            grad(j) = (abs_del_flux(i+(operation*j))-abs_del_flux(i))/...
-            (L_shell(i+(operation*j))-L_shell(i));
-            flux(j) = del_flux(i+(operation*j));
-        end
+    if num_grad == 0
+        a = operation;
+        b = operation;
     else
-        for j = 1:num_grad
-            grad(j) = (abs_del_flux(i)-abs_del_flux(i+(operation*j)))/...
-            (L_shell(i)-L_shell(i+(operation*j)));
-            flux(j) = del_flux(i+(operation*j));
+        if operation == 1
+            for i = 1:num_grad
+                grad(i,:) = (abs_del_flux(locations+(operation*i).*ones(size(locations)))-abs_del_flux(locations))./...
+                (L_shell(locations+(operation*i).*ones(size(locations)))-L_shell(locations).*ones(size(locations)));
+                flux(i,:) = del_flux(locations+((operation*i).*ones(size(locations))));
+            end
+        else
+            for i = 1:num_grad
+                grad(i,:) = (abs_del_flux(locations)-abs_del_flux(locations+(operation*i).*ones(size(i))))./...
+                (L_shell(locations)-L_shell(locations+(operation*i).*ones(size(i))));
+                flux(i,:) = del_flux(locations+((operation*i).*ones(size(i))));
+            end
         end
+        a = median(grad,'omitnan');
+        b = median(flux,'omitnan'); 
     end
-    
-    a = median(grad,'omitnan');
-    b = median(flux,'omitnan');
 end
