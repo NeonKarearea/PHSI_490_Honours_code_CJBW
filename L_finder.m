@@ -126,8 +126,8 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = L_finder(flux,L_shell,datenums,geograph
         end
     end
     
-    cutoff_MLTs = mod((floor(cutoff_MLTs./45)),8);
-
+    cutoff_MLTs = mod(floor(cutoff_MLTs./45),8);
+    
     a = flux_pass_directional;
     b = L_shell_pass_directional;
     c = datenum_pass_directional;
