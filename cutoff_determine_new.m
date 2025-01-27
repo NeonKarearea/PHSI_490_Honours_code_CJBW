@@ -74,7 +74,6 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
         sign_change_loc = find(sign_change == 1);
         sign_change_loc_grouped = grouper(sign_change_loc,8);
         offset = 0;
-        diff_flux_true = cutoff_flux-min(flux);
 
         for j = 1:length(local_maxima_grouped)
             max_loc = local_maxima_grouped(j);
@@ -92,7 +91,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
             
             %The 0.6 is kind of pulled out of my ass, will have to
             %empirically get this number
-            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4 && diff_flux_local/diff_flux_true >= 0.6
+            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4
                 try
                     diff_flux_other_side = smoothed_flux(local_maxima_grouped(j)) - min(smoothed_flux(local_maxima_grouped(j):local_maxima_grouped(j+1)));
                 catch
@@ -107,7 +106,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
                     tested_point = test_point;
                 end
                 
-            elseif diff_flux_local/diff_flux_true >= 0.6 && L_shell(sign_change_loc_grouped(find(is_in==1,1,'last')))>6
+            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1,'last')))>6
                 try
                     diff_flux_previous_max = smoothed_flux(local_maxima_grouped(j-1));
                 catch
@@ -133,12 +132,9 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
                     tested_point = test_point;
                 end
                 
-            elseif diff_flux_local/diff_flux_true >= 0.6
+            else
                 test_point = sign_change_loc_grouped(is_in==1);
                 tested_point = test_point;
-            else
-                test_point = 1;
-                tested_point = 1;
             end
             
             %This does the original test
