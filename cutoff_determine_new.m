@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_cjbw_new(L_shell,flux,MLT,dst,kp,...
+function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -29,14 +29,19 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_cjbw_new(L_shell,flux,MLT,dst,
     smoothed_flux = movmean(flux,17,'omitnan');
     grads = gradient(smoothed_flux,L_shell);
     
-    %This is where we group the local_maxima points and discard the first
-    %point at that is always noise
+    %This is where we group the local_maxima points
     flux_local_maxima = find(islocalmax(smoothed_flux));
     flux_local_maxima_sections = find(abs(diff(smoothed_flux(flux_local_maxima)))>=2.5);
-    if length(flux_local_maxima_sections) == 1
+    if length(flux_local_maxima_sections) >= 1
         flux_local_maxima_sections = [0;flux_local_maxima_sections];
     end
     
+    %Here we take the median between two maxima to try and find where the
+    %smallest difference between the median and all of the
+    %flux_local_maxima are. In some cases this will put the "local maxima"
+    %lower than it shold, however as we initially measure for a difference
+    %between maxima of >= 2.5, we get some maxima that are greater than the
+    %other two. 
     for i = 1:length(flux_local_maxima_sections)
         try
             flux_median_local_maxima = floor(median(flux_local_maxima(flux_local_maxima_sections(i)+1:flux_local_maxima_sections(i+1))));
@@ -48,7 +53,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_cjbw_new(L_shell,flux,MLT,dst,
     end
     
     %This is to catch any instances where there is no L-shell above
-    %the defined L
+    %the defined L or local_maxima_grouped
     if isnan(avg_flux) == 1 || ~exist('local_maxima_grouped','var')
         true_flux = NaN;
         true_L = NaN;
@@ -69,7 +74,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_cjbw_new(L_shell,flux,MLT,dst,
         sign_change_loc = find(sign_change == 1);
         sign_change_loc_grouped = grouper(sign_change_loc,8);
         offset = 0;
-        diff_flux_true = avg_flux-min(flux);
+        diff_flux_true = cutoff_flux-min(flux);
 
         for j = 1:length(local_maxima_grouped)
             max_loc = local_maxima_grouped(j);
