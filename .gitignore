@@ -5,9 +5,8 @@ PEOS data PHSI 490/
 Readings for PHSI490/
 CME events/
 Mag_data/
-=======
 Intermag_data/
-paper_data_or_figures/
+=======
 *.mat
 *.pdf
 *.zip
