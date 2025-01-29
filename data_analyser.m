@@ -58,12 +58,12 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = data_analyser(start_year,start_month,..
     %This will then do the event analysis for each satellite in the event.
     for k = 1:length(relevant_satellite)
         if k == 1
-            [fluxes,L_shells,datenums,original_cutoff_fluxes,cutoff_fluxes,cutoff_L_shells,cutoff_datenums,MLT,dst,kp,geograph_lat,geograph_lon,geomag_lat,geomag_lon]...
+            [fluxes,L_shells,datenums,cutoff_fluxes,cutoff_L_shells,cutoff_datenums,MLT,dst,kp,delta_dst,geograph_lat,geograph_lon,geomag_lat,geomag_lon]...
                 = event_determine(start_date,end_date,relevant_satellite{k},...
                 n,num_grad,min_flux,min_avg_flux,P);
 
         else
-            [fluxes_2,L_shells_2,datenums_2,original_cutoff_fluxes_2,cutoff_fluxes_2,cutoff_L_shells_2,cutoff_datenums_2,MLT_2,dst_2,kp_2,geograph_lat_2,geogeograph_lon_2,geomag_lat_2,geomag_lon_2]...
+            [fluxes_2,L_shells_2,datenums_2,cutoff_fluxes_2,cutoff_L_shells_2,cutoff_datenums_2,MLT_2,dst_2,kp_2,delta_dst_2,geograph_lat_2,geogeograph_lon_2,geomag_lat_2,geomag_lon_2]...
                 = event_determine(start_date,end_date,relevant_satellite{k},...
                 n,num_grad,min_flux,min_avg_flux,P);
 
@@ -71,13 +71,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = data_analyser(start_year,start_month,..
             fluxes = [fluxes,fluxes_2];
             L_shells = [L_shells,L_shells_2];
             datenums = [datenums,datenums_2];
-            original_cutoff_fluxes = [original_cutoff_fluxes,original_cutoff_fluxes_2];
             cutoff_fluxes = [cutoff_fluxes,cutoff_fluxes_2];
             cutoff_L_shells = [cutoff_L_shells,cutoff_L_shells_2];
             cutoff_datenums = [cutoff_datenums,cutoff_datenums_2];
             MLT = [MLT,MLT_2];
             dst = [dst,dst_2];
             kp = [kp,kp_2];
+            delta_dst = [delta_dst,delta_dst_2];
             geograph_lat = [geograph_lat,geograph_lat_2];
             geograph_lon = [geograph_lon,geogeograph_lon_2];
             geomag_lat = [geomag_lat,geomag_lat_2];
@@ -92,13 +92,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = data_analyser(start_year,start_month,..
     non_nan_fluxes = fluxes(non_nans);
     non_nan_L_shells = L_shells(non_nans);
     non_nan_datenums = datenums(non_nans);
-    non_nan_original_cutoff_fluxes = original_cutoff_fluxes(non_nans);
     non_nan_cutoff_fluxes = cutoff_fluxes(non_nans);
     non_nan_cutoff_L_shells = cutoff_L_shells(non_nans);
     non_nan_cutoff_datenums = cutoff_datenums(non_nans);
-    non_nan_sunside = MLT(non_nans);
+    non_nan_MLT = MLT(non_nans);
     non_nan_dst = dst(non_nans);
     non_nan_kp = kp(non_nans);
+    non_nan_delta_dst = delta_dst(non_nans);
     non_nan_geograph_lat = geograph_lat(non_nans);
     non_nan_geograph_lon = geograph_lon(non_nans);
     non_nan_geomag_lat = geomag_lat(non_nans);
@@ -120,13 +120,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = data_analyser(start_year,start_month,..
             sorted_fluxes{i+offset} = non_nan_fluxes{loc(j)};
             sorted_L_shells{i+offset} = non_nan_L_shells{loc(j)};
             sorted_datenums{i+offset} = non_nan_datenums{loc(j)};
-            sorted_original_cutoff_fluxes(i+offset) = non_nan_original_cutoff_fluxes(loc(j));
             sorted_cutoff_fluxes(i+offset) = non_nan_cutoff_fluxes(loc(j));
             sorted_cutoff_L_shells(i+offset) = non_nan_cutoff_L_shells(loc(j));
             sorted_cutoff_datenums(i+offset) = non_nan_cutoff_datenums(loc(j));
-            sorted_sunside(i+offset) = non_nan_sunside(loc(j));
+            sorted_MLT(i+offset) = non_nan_MLT(loc(j));
             sorted_dst(i+offset) = non_nan_dst(loc(j));
             sorted_kp(i+offset) = non_nan_kp(loc(j));
+            sorted_delta_dst(i+offset) = non_nan_delta_dst(loc(j));
             sorted_geograph_lat(i+offset) = non_nan_geograph_lat(loc(j));
             sorted_geograph_lon(i+offset) = non_nan_geograph_lon(loc(j));
             sorted_geomag_lat(i+offset) = non_nan_geomag_lat(loc(j));
@@ -150,13 +150,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = data_analyser(start_year,start_month,..
     a = sorted_fluxes;
     b = sorted_L_shells;
     c = sorted_datenums;
-    d = sorted_original_cutoff_fluxes;
-    e = sorted_cutoff_fluxes;
-    f = sorted_cutoff_L_shells;
-    g = sorted_cutoff_datenums;
-    h = sorted_sunside;
-    i = sorted_dst;
-    j = sorted_kp;
+    d = sorted_cutoff_fluxes;
+    e = sorted_cutoff_L_shells;
+    f = sorted_cutoff_datenums;
+    g = sorted_MLT;
+    h = sorted_dst;
+    i = sorted_kp;
+    j = sorted_delta_dst;
     k = sorted_geograph_lat;
     l = sorted_geograph_lon;
     m = sorted_geomag_lat;

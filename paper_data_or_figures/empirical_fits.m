@@ -91,10 +91,10 @@ legend("Empirically derived cutoff latitudes","Dayside D_{st} fit","General D_{s
 
 figure(4)
 hold on
-scatter(cutoff_datenums(cutoff_MLT<=3 | cutoff_MLT>=21),cutoff_invariant_lat(cutoff_MLT<=3 | cutoff_MLT>=21),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT>=3 & cutoff_MLT<=9),cutoff_invariant_lat(cutoff_MLT>=3 & cutoff_MLT<=9),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT>=9 & cutoff_MLT<=15),cutoff_invariant_lat(cutoff_MLT>=9 & cutoff_MLT<=15),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT>=15 & cutoff_MLT<=21),cutoff_invariant_lat(cutoff_MLT>=15 & cutoff_MLT<=21),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT./15>=21 | cutoff_MLT./15<=3),cutoff_invariant_lat(cutoff_MLT./15>=21 | cutoff_MLT./15<=3),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT./15>=3 & cutoff_MLT./15<=9),cutoff_invariant_lat(cutoff_MLT./15>=3 & cutoff_MLT./15<=9),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT./15>=9 & cutoff_MLT./15<=15),cutoff_invariant_lat(cutoff_MLT./15>=9 & cutoff_MLT./15<=15),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT./15>=15 & cutoff_MLT./15<=21),cutoff_invariant_lat(cutoff_MLT./15>=15 & cutoff_MLT./15<=21),'LineWidth',2.0)
 plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';zeros(size(dst_20120123_event))']),'LineWidth',2.0)
 plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';6.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
 plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';12.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
