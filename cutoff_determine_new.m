@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,...
+function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,symh,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -60,7 +60,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
-        true_delta_dst = NaN;
+        true_symh = NaN;
         true_geograph_lat = NaN;
         true_geograph_lon = NaN;
         true_geomag_lat = NaN;
@@ -155,16 +155,17 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
                     true_MLT = MLT(int64(location));
                     true_dst = dst(int64(location));
                     true_kp = kp(int64(location));
+                    true_symh = symh(int64(location));
                     true_geograph_lat = geograph_lat(int64(location));
                     true_geograph_lon = geograph_lon(int64(location));
                     true_geomag_lat = geomag_lat(int64(location));
                     true_geomag_lon = geomag_lon(int64(location));
                     
-                    try
-                        true_delta_dst = dst(int64(location))-dst(int64(location)-3600);
-                    catch
-                        true_delta_dst = dst(int64(location))-dst(1);
-                    end
+                    %try
+                    %    true_delta_dst = dst(int64(location))-dst(int64(location)-3600);
+                    %catch
+                    %    true_delta_dst = dst(int64(location))-dst(1);
+                    %end
                     
                     break
                 else
@@ -184,7 +185,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
         true_MLT = NaN;
         true_dst = NaN;
         true_kp = NaN;
-        true_delta_dst = NaN;
+        true_symh = NaN;
         true_geograph_lat = NaN;
         true_geograph_lon = NaN;
         true_geomag_lat = NaN;
@@ -195,7 +196,7 @@ function [a,b,c,d,e,f,g,h,i,j] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,..
     c = true_MLT;
     d = true_dst;
     e = true_kp;
-    f = true_delta_dst;
+    f = true_symh;
     g = true_geograph_lat;
     h = true_geograph_lon;
     i = true_geomag_lat;

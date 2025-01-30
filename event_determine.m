@@ -61,11 +61,12 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = event_determine(start_date,end_date,...
     event_MLT = event.fofl_magnetic_local_time(start_loc:n:end_loc);
     event_dst = event.dst(start_loc:n:end_loc);
     event_kp = event.kp(start_loc:n:end_loc);
+    event_symh = event.symh(start_loc:n:end_loc);
     %event_E3_measurements = event.poes_0_E3_corrected_0_30_2_50_MeV(start_loc+1:n:end_loc);
     %event_P5_measurements = event.poes_0_P5_corrected_2_628_MeV(start_loc+1:n:end_loc);
     
     %Finally, we can find where the cutoffs are.
     [a,b,c,d,e,f,g,h,i,j,k,l,m,n] = L_finder(event_flux,event_L_shell,event_datenum,...
         event_geograph_lat,event_geograph_lon,event_geomag_lat,event_geomag_lon,event_MLT,event_dst,event_kp,...
-        num_grad,min_flux,min_avg_flux);
+        event_symh,num_grad,min_flux,min_avg_flux);
 end

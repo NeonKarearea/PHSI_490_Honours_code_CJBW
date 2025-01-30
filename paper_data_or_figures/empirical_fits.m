@@ -12,9 +12,11 @@ else
     disp("That's not a valid answer. The program will now break (apparently I can't just stop the code without terminating the whole MATLAB session, which is the dumbest thing since using index-1 counting like a normal language).")
 end
 
-dst_gen_p6 = nlinfit(cutoff_dst_p6,cutoff_invariant_lat_p6,exponential,[0,0,0]);
-dst_night_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),exponential,[0,0,0]);
-dst_day_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),exponential,[0,0,0]);
+dst_attempt = @(p,xm)exp(p(1).*xm(1,:)+p(2))+p(3).*xm(2,:);%xm(2,:)+p(4);
+
+dst_gen_p6 = nlinfit([cutoff_dst_p6;cutoff_delta_dst_p6],cutoff_invariant_lat_p6,dst_attempt,[0,0,0]);
+dst_night_p6 = nlinfit([cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270);cutoff_delta_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270)],cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),dst_attempt,[0,0,0]);
+dst_day_p6 = nlinfit([cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270);cutoff_delta_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270)],cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),dst_attempt,[0,0,0]);
 kp_gen_p6 = nlinfit(cutoff_kp_p6,cutoff_invariant_lat_p6,quadratic,[0,0,0]);
 kp_night_p6 = nlinfit(cutoff_kp_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0]);
 kp_day_p6 = nlinfit(cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0]);
@@ -73,10 +75,11 @@ legend("Nightside cutoff latitudes","Dayside cutoff latitudes","General fit","Da
 
 figure(3)
 hold on
-scatter(cutoff_datenums,cutoff_invariant_lat,'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_day_p6,dst_20120123_event),'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_gen_p6,dst_20120123_event),'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_night_p6,dst_20120123_event),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
+plot(dst_time_range,1.01.*exponential(dst_day_p6,dst_20120123_event),'LineWidth',2.0)
+plot(dst_time_range,1.01.*exponential(dst_gen_p6,dst_20120123_event),'LineWidth',2.0)
+plot(dst_time_range,1.01.*exponential(dst_night_p6,dst_20120123_event),'LineWidth',2.0)
 plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 grid on
 grid minor
@@ -87,18 +90,15 @@ xlim([datenum(2012,01,23),datenum(2012,01,27)])
 title("Cutoff invariant latitudes for the event from 23/10/2012 to 31/01/2012")
 xlabel("Date (UT)")
 ylabel("Invariant latitude (\lambda)")
-legend("Empirically derived cutoff latitudes","Dayside D_{st} fit","General D_{st} fit","Nightside D_{st} fit","Neal D_{st} fit")
+legend("Empirically derived nightside cutoff latitudes","Empirically derived dayside cutoff latitudes","Dayside D_{st} fit","General D_{st} fit","Nightside D_{st} fit","Neal D_{st} fit")
 
 figure(4)
 hold on
-scatter(cutoff_datenums(cutoff_MLT./15>=21 | cutoff_MLT./15<=3),cutoff_invariant_lat(cutoff_MLT./15>=21 | cutoff_MLT./15<=3),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT./15>=3 & cutoff_MLT./15<=9),cutoff_invariant_lat(cutoff_MLT./15>=3 & cutoff_MLT./15<=9),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT./15>=9 & cutoff_MLT./15<=15),cutoff_invariant_lat(cutoff_MLT./15>=9 & cutoff_MLT./15<=15),'LineWidth',2.0)
-scatter(cutoff_datenums(cutoff_MLT./15>=15 & cutoff_MLT./15<=21),cutoff_invariant_lat(cutoff_MLT./15>=15 & cutoff_MLT./15<=21),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';zeros(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';6.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';12.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';18.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
+scatter(cutoff_datenums,cutoff_invariant_lat,'LineWidth',2.0)
+plot(dst_time_range,1.01.*combined(combined_form_params,[kp_interp';dst_20120123_event';zeros(size(dst_20120123_event))']),'LineWidth',2.0)
+plot(dst_time_range,1.01.*combined(combined_form_params,[kp_interp';dst_20120123_event';6.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
+plot(dst_time_range,1.01.*combined(combined_form_params,[kp_interp';dst_20120123_event';12.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
+plot(dst_time_range,1.01.*combined(combined_form_params,[kp_interp';dst_20120123_event';18.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
 plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
 grid on
