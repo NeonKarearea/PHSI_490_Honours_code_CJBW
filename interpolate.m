@@ -118,7 +118,7 @@ function interpolate(satellite)
         interp_geomag_lon = interp1(x(idxgeomaglon),geomag_lon(idxgeomaglon),x,'spline');
         interp_MLT = interp1(x(idxMLT),MLT(idxMLT),x,'spline');
         [dst, kp] = gm_interpolate(start_datenum,end_datenum,data);
-        symh = symh_interpolate(start_datenum,end_datenum,data);
+        [symh, ae] = gm60_interpolate(start_datenum,end_datenum,data);
         
         %Now we need to break the event_data back into the date_data.
         for n = 1:length(event)
@@ -144,6 +144,7 @@ function interpolate(satellite)
             date_data.dst = dst(start_time:(end_point+start_time-start_point));
             date_data.kp = kp(start_time:(end_point+start_time-start_point));
             date_data.symh = symh(start_time:(end_point+start_time-start_point));
+            date_data.ae = ae(start_time:(end_point+start_time-start_point));
         end        
     end
     disp(strcat(satellite," has been interpolated."))
