@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,symh,ae,...
+function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,symh,ae,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -196,15 +196,16 @@ function [a,b,c,d,e,f,g,h,i,j,k] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,
         true_geomag_lat = NaN;
         true_geomag_lon = NaN;
     end
-    a = true_flux;
-    b = true_L;
-    c = true_MLT;
-    d = true_dst;
-    e = true_kp;
-    f = true_symh;
-    g = true_ae;
-    h = true_geograph_lat;
-    i = true_geograph_lon;
-    j = true_geomag_lat;
-    k = true_geomag_lon;
+    a = cutoff_flux;
+    b = true_flux;
+    c = true_L;
+    d = true_MLT;
+    e = true_dst;
+    f = true_kp;
+    g = true_symh;
+    h = true_ae;
+    i = true_geograph_lat;
+    j = true_geograph_lon;
+    k = true_geomag_lat;
+    l = true_geomag_lon;
 end

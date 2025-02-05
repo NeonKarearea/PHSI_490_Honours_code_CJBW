@@ -15,6 +15,7 @@ end
 %ae_attempt = @(p,x)(p(1).*x.^2)+(p(2).*x)+p(3);%exp(p(1).*x+p(2))+p(3);xm(2,:)+p(4);
 opts = statset('MaxIter',1e5);
 
+%This is for the 'normal' fits
 ae_gen_p6 = nlinfit(cutoff_ae_p6,cutoff_invariant_lat_p6,quadratic,[0,0,0]);
 ae_night_p6 = nlinfit(cutoff_ae_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0]);
 ae_day_p6 = nlinfit(cutoff_ae_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0]);
@@ -31,12 +32,14 @@ symh_gen_p6 = nlinfit(cutoff_symh_p6,cutoff_invariant_lat_p6,exponential,[0,0,0]
 symh_night_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),exponential,[0,0,0],'Options',opts);
 symh_day_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),exponential,[0,0,0],'Options',opts);
 
+%This is for using two parameters. Note that we will have to use an
+%adjusted R^2 value due to adding more parameters.
+combined_equa = @(p,xn) (p(1).*quadratic(kp_day_p6,xn(1,:))+p(2).*exponential(dst_day_p6,xn(2,:)));
+combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+exp(p(3).*xm(2,:)+p(4))+p(5);
 
-combined_equa = @(p,xn) (p(1).*quadratic(kp_gen_p6,xn(1,:))+p(2).*exponential(ae_gen_p6,xn(2,:)));
-combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+sin(((xm(3,:)./24).*pi)+p(3)).*exp(p(4).*xm(2,:)+p(5))+p(6);
+combined_form_params = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined,[0,0,0,0,0],'Options',opts);
+combined_equa_params = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined_equa,[0,0],'Options',opts);
 
-combined_form_params = nlinfit([cutoff_kp_p6;cutoff_dst_p6;cutoff_MLT_p6./15],cutoff_invariant_lat_p6,combined,[0,0,0,0,0,0]);
-combined_equa_params = nlinfit([cutoff_kp_p6;cutoff_dst_p6],cutoff_invariant_lat_p6,combined_equa,[0,0]);
 dst_range = -400:1:50;
 ae_range = linspace(0,3500,451);
 kp_range = linspace(0,9,451);
@@ -62,7 +65,7 @@ grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi')
-title("D_{st} against Cutoff invariant latitude for all events")
+title("D_{st} against Cutoff invariant latitude for events before 2007")
 xlabel("D_{st} (nT)")
 ylabel("Invariant latitude (\lambda)")
 legend("Nightside cutoff latitudes","Dayside cutoff latitude","General fit","Dayside fit","Nightside fit","Location","northwest")
@@ -79,7 +82,7 @@ grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi')
-title("K_{p} against Cutoff invariant latitude for all events")
+title("K_{p} against Cutoff invariant latitude for events before 2007")
 xlabel("K_{p} (nT)")
 ylabel("Invariant latitude (\lambda)")
 legend("Nightside cutoff latitudes","Dayside cutoff latitudes","General fit","Dayside fit","Nightside fit","Neal K_{p} fit","Location","northwest")
@@ -109,6 +112,7 @@ plot(dst_time_range,exponential(dst_day_p6,dst_20120123_event),'LineWidth',2.0)
 plot(dst_time_range,exponential(dst_gen_p6,dst_20120123_event),'LineWidth',2.0)
 plot(dst_time_range,exponential(dst_night_p6,dst_20120123_event),'LineWidth',2.0)
 plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
+plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
 grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
@@ -118,16 +122,17 @@ xlim([datenum(2012,01,23),datenum(2012,01,27)])
 title("Cutoff invariant latitudes for the event from 23/10/2012 to 31/01/2012")
 xlabel("Date (UT)")
 ylabel("Invariant latitude (\lambda)")
-legend("Empirically derived nightside cutoff latitudes","Empirically derived dayside cutoff latitudes","Dayside SYM-H fit","General SYM-H fit","Nightside SYM-H fit","Neal D_{st} fit")
+legend("Empirically derived nightside cutoff latitudes","Empirically derived dayside cutoff latitudes","Dayside D_{st} fit","General D_{st} fit","Nightside D_{st} fit","Neal D_{st} fit")
 
 figure(5)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(minute_time_range,quadratic(ae_day_p6,ae_20120123_event),'LineWidth',2.0)
-plot(minute_time_range,quadratic(ae_gen_p6,ae_20120123_event),'LineWidth',2.0)
-plot(minute_time_range,quadratic(ae_night_p6,ae_20120123_event),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_day_p6,kp_20120123_event),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_gen_p6,kp_20120123_event),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_night_p6,kp_20120123_event),'LineWidth',2.0)
 plot(kp_time_range,((-0.057912.*((kp_20120123_event).^2))-0.38237.*kp_20120123_event+63.1626),'k','LineWidth',2.0)
+plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
 grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
@@ -142,10 +147,10 @@ legend("Empirically derived nightside cutoff latitudes","Empirically derived day
 figure(6)
 hold on
 scatter(cutoff_datenums,cutoff_invariant_lat,'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';zeros(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';6.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';12.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event';18.*ones(size(dst_20120123_event))']),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
+%plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
+%plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
+%plot(dst_time_range,combined(combined_form_params,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
 plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
 grid on
@@ -157,7 +162,7 @@ datetick('x',20,'keepticks')
 title("Cutoff invariant latitudes for the event from 23/10/2012 to 31/01/2012")
 xlabel("Date (UT)")
 ylabel("Invariant latitude (\lambda)")
-legend("Epmirically derived cutoff latitudes","Combined model midnight (MLT = 0)","Combined model dawn (MLT = 6)","Combined model midday (MLT = 12)","Combined model dusk (MLT = 18)","Neal D_{st} fit","CME impact")
+legend("Epmirically derived cutoff latitudes","Combined model","Neal D_{st} fit","CME impact")
 
 figure(7)
 hold on

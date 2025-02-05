@@ -19,7 +19,7 @@ grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','demi')
-title("Measured proton flux on 23/01/2012")
+title("Measured proton flux from NOAA 19")
 xlabel("Time on 23/01/2012 (UT)")
 ylabel("Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("Omnidirection P6 detector","Omnidirectional P7 detector","Omnidirectional P8 detector")
@@ -47,7 +47,7 @@ grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','demi','YScale','log')
-title("Measured log_{10} proton flux on 23/01/2012 from 17:00 to 17:50")
+title("Measured log_{10} proton flux from NOAA 19")
 xlabel("Time on 23/02/2012 (UT)")
 ylabel("log_{10} Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("P6_{Omni}","P7_{Omni}","P8_{Omni}")

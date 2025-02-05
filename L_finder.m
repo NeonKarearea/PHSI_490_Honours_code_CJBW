@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,symh,ae,num_grad,min_flux,min_avg_flux)
+function [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q] = L_finder(flux,L_shell,datenums,geograph_lat,geograph_lon,geomag_lat,geomag_lon,MLT,dst,kp,symh,ae,num_grad,min_flux,min_avg_flux)
     %This function determines the cutoff L and flux over an event. This will return 6 things; the flux, L_shell, and datenum information used in the determining of the cutoffs (for plotting reasons) and the cutoff flux, L-shell, and datenum for each event.
     sat_lat_plus = geograph_lat(2:end);
     sat_lat_minus = geograph_lat(1:end-1);
@@ -89,11 +89,13 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p] = L_finder(flux,L_shell,datenums,geog
     %Now we can find the cutoff L_shells
     m = 0; %This starts it as entry
     for k = 1:length(flux_pass_directional)
-        [cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_symh,cut_ae,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_new(L_shell_pass_directional{k},...
+        [leske_cut_flux,cut_flux,cut_L,cut_MLT,cut_dst,cut_kp,cut_symh,cut_ae,cut_geograph_lat,cut_geograph_lon,cut_geomag_lat,cut_geomag_lon] = cutoff_determine_new(L_shell_pass_directional{k},...
             flux_pass_directional{k},MLT_pass_directional{k},dst_pass_directional{k},...
             kp_pass_directional{k},symh_pass_directional{k},ae_pass_directional{k},...
             geograph_lat_directional{k},geograph_lon_directional{k},geomag_lat_directional{k},...
             geograph_lon_directional{k},m,num_grad,min_flux,min_avg_flux);
+        
+        leske_cutoff_flux(k) = leske_cut_flux;
         cutoff_flux(k) = cut_flux;
         cutoff_L(k) = cut_L;
         cutoff_MLTs(k) = cut_MLT;
@@ -140,17 +142,18 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p] = L_finder(flux,L_shell,datenums,geog
     a = flux_pass_directional;
     b = L_shell_pass_directional;
     c = datenum_pass_directional;
-    d = cutoff_flux;
-    e = cutoff_L;
-    f = cutoff_datenum;
-    g = cutoff_MLTs;
-    h = cutoff_dst;
-    i = cutoff_kp;
-    j = cutoff_symh;
-    k = cutoff_ae;
-    l = cutoff_entrance;
-    m = cutoff_geograph_lat;
-    n = cutoff_geograph_lon;
-    o = cutoff_geomag_lat;
-    p = cutoff_geomag_lon;
+    d = leske_cutoff_flux;
+    e = cutoff_flux;
+    f = cutoff_L;
+    g = cutoff_datenum;
+    h = cutoff_MLTs;
+    i = cutoff_dst;
+    j = cutoff_kp;
+    k = cutoff_symh;
+    l = cutoff_ae;
+    m = cutoff_entrance;
+    n = cutoff_geograph_lat;
+    o = cutoff_geograph_lon;
+    p = cutoff_geomag_lat;
+    q = cutoff_geomag_lon;
 end
