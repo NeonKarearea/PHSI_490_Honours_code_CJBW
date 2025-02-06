@@ -77,6 +77,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
         sign_change = sign_del_flux_plus ~= sign_del_flux_minus & (~isnan(sign_del_flux_plus) & ~isnan(sign_del_flux_minus));
         sign_change_loc = find(sign_change == 1);
         sign_change_loc_grouped = grouper(sign_change_loc,8);
+        diff_flux_true = avg_flux - min(flux);
         offset = 0;
 
         for j = 1:length(local_maxima_grouped)
@@ -95,7 +96,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
             
             %The 0.6 is kind of pulled out of my ass, will have to
             %empirically get this number
-            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4
+            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1)))<4 && diff_flux_local/diff_flux_true >= 0.6
                 try
                     diff_flux_other_side = smoothed_flux(local_maxima_grouped(j)) - min(smoothed_flux(local_maxima_grouped(j):local_maxima_grouped(j+1)));
                 catch
@@ -110,7 +111,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
                     tested_point = test_point;
                 end
                 
-            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1,'last')))>6
+            elseif L_shell(sign_change_loc_grouped(find(is_in==1,1,'last')))>6 && diff_flux_local/diff_flux_true >= 0.6
                 try
                     diff_flux_previous_max = smoothed_flux(local_maxima_grouped(j-1));
                 catch
@@ -136,9 +137,11 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
                     tested_point = test_point;
                 end
                 
-            else
+            elseif diff_flux_local/diff_flux_true >= 0.6
                 test_point = sign_change_loc_grouped(is_in==1);
                 tested_point = test_point;
+            else
+                test_point = 1;
             end
             
             %This does the original test

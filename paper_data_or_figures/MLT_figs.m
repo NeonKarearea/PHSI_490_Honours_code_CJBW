@@ -46,6 +46,32 @@ ylabel("Invariant latitude (\lambda)")
 xlim([datenum(2012,01,23,0,0,0),datenum(2012,01,27,0,0,0)])
 legend("0-3 MLT","3-6 MLT","6-9 MLT","9-12 MLT","12-15 MLT","15-18 MLT","18-21 MLT","21-24 MLT","CME impacts")
 
+for i = 1:4
+    cutoff_datenums_quadrant = cutoff_datenums20120123(cutoff_MLT20120123==mod(2*i-1,8)|cutoff_MLT20120123==mod(2*i,8));
+    cutoff_invars_quadrant = cutoff_invariant_lat20120123(cutoff_MLT20120123==mod(2*i-1,8)|cutoff_MLT20120123==mod(2*i,8));
+    cutoff_datenums_bins = floor((cutoff_datenums_quadrant-datenum(2012,01,23))./0.0208);
+    half_hour_bins = datenum(2012,01,23):datenum(0,0,0,0,30,0):datenum(2012,01,27);
+    cutoff_invars_bin = NaN.*ones(1,length(half_hour_bins));
+    for j = 1:length(half_hour_bins)
+        median_indicies = find(cutoff_datenums_bins==j);
+        cutoff_invars_bin(j) = median(cutoff_invars_quadrant(median_indicies));
+    end
+    first_point = find(~isnan(cutoff_invars_bin(:)),1);
+    last_point = find(~isnan(cutoff_invars_bin(:)),1,'last');
+    cutoff_invars_interp = cutoff_invars_bin(first_point:last_point);
+    
+    idx = ~isnan(cutoff_invars_interp);
+    x = 1:length(cutoff_invars_interp);
+    cutoff_invars_interp = interp1(x(idx),cutoff_invars_interp(idx),x,'makima');
+    cutoff_invars_bin(first_point:last_point) = cutoff_invars_interp;
+    
+    cutoff_invars_binned(i,:) = cutoff_invars_bin; %#ok<SAGROW>
+end
+
+delta_cutoff_invars = cutoff_invars_binned - cutoff_invars_binned(end,:);
+figure(4)
+plot(half_hour_bins,delta_cutoff_invars,'LineWidth',2.0)
+
 % figure(3)
 % hold on
 % for i = 0:7
