@@ -142,6 +142,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
                 tested_point = test_point;
             else
                 test_point = 1;
+                tested_point = 1;
             end
             
             %This does the original test

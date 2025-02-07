@@ -71,6 +71,16 @@ end
 delta_cutoff_invars = cutoff_invars_binned - cutoff_invars_binned(end,:);
 figure(4)
 plot(half_hour_bins,delta_cutoff_invars,'LineWidth',2.0)
+grid on
+grid minor
+set(gcf, 'Position', get(0, 'Screensize'));
+set(gca,'FontSize',18,'FontWeight','Demi')
+text(datenum(2012,01,23,6,0,0),-1,"From 2012-01-23",'FontSize',15)
+datetick('x','dd/mm HH:MM')
+title("Difference in invariant latitude against time")
+xlabel("Date (UT)")
+ylabel("Delta invariant latitude,(\Delta\lambda)")
+legend("Dawn MLT","Dayside MLT","Dusk MLT","Nightside MLT")
 
 % figure(3)
 % hold on
