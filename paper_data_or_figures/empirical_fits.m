@@ -21,21 +21,23 @@ ae_night_p6 = nlinfit(cutoff_ae_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_i
 ae_day_p6 = nlinfit(cutoff_ae_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0]);
 
 dst_gen_p6 = nlinfit(cutoff_dst_p6,cutoff_invariant_lat_p6,exponential,[0,0,0]);
-dst_night_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),exponential,[0,0,0]);
-dst_day_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),exponential,[0,0,0]);
+dst_night_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0]);
+dst_day_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0]);
 
 kp_gen_p6 = nlinfit(cutoff_kp_p6,cutoff_invariant_lat_p6,quadratic,[0,0,0]);
 kp_night_p6 = nlinfit(cutoff_kp_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0]);
 kp_day_p6 = nlinfit(cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0]);
 
-symh_gen_p6 = nlinfit(cutoff_symh_p6,cutoff_invariant_lat_p6,exponential,[0,0,0],'Options',opts);
-symh_night_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),exponential,[0,0,0],'Options',opts);
-symh_day_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),exponential,[0,0,0],'Options',opts);
+symh_gen_p6 = nlinfit(cutoff_symh_p6,cutoff_invariant_lat_p6,quadratic,[0,0,0],'Options',opts);
+symh_night_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0],'Options',opts);
+symh_day_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),quadratic,[0,0,0],'Options',opts);
 
 %This is for using two parameters. Note that we will have to use an
 %adjusted R^2 value due to adding more parameters.
-combined_equa = @(p,xn) (p(1).*quadratic(kp_day_p6,xn(1,:))+p(2).*exponential(dst_day_p6,xn(2,:)));
-combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+exp(p(3).*xm(2,:)+p(4))+p(5);
+combined_gen_equa = @(p,xn) (p(1).*quadratic(kp_gen_p6,xn(1,:))+p(2).*exponential(dst_gen_p6,xn(2,:)));
+combined_night_equa = @(p,xn) (p(1).*quadratic(kp_night_p6,xn(1,:))+p(2).*exponential(dst_night_p6,xn(2,:)));
+combined_day_equa = @(p,xn) (p(1).*quadratic(kp_day_p6,xn(1,:))+p(2).*exponential(dst_day_p6,xn(2,:)));
+combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+(p(3).*xm(2,:).^2)+p(4).*xm(2,:)+p(5);
 
 combined_form_params = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined,[0,0,0,0,0],'Options',opts);
 combined_equa_params = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined_equa,[0,0],'Options',opts);
@@ -58,8 +60,8 @@ hold on
 scatter(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_invariant_lat_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),'LineWidth',2.0)
 scatter(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_invariant_lat_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),'LineWidth',2.0)
 plot(dst_range,exponential(dst_gen_p6,dst_range),'LineWidth',2.0)
-plot(dst_range,exponential(dst_day_p6,dst_range),'LineWidth',2.0)
-plot(dst_range,exponential(dst_night_p6,dst_range),'LineWidth',2.0)
+plot(dst_range,quadratic(dst_day_p6,dst_range),'LineWidth',2.0)
+plot(dst_range,quadratic(dst_night_p6,dst_range),'LineWidth',2.0)
 plot(dst_range,((0.031679.*dst_range)+62.5344),'k','LineWidth',2.0)
 grid on
 grid minor
@@ -108,9 +110,9 @@ figure(4)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_day_p6,dst_20120123_event),'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_gen_p6,dst_20120123_event),'LineWidth',2.0)
-plot(dst_time_range,exponential(dst_night_p6,dst_20120123_event),'LineWidth',2.0)
+plot(dst_time_range,quadratic(dst_day_p6,dst_20120123_event),'LineWidth',2.0)
+plot(dst_time_range,quadratic(dst_gen_p6,dst_20120123_event),'LineWidth',2.0)
+plot(dst_time_range,quadratic(dst_night_p6,dst_20120123_event),'LineWidth',2.0)
 plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
 grid on
