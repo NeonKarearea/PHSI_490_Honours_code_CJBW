@@ -1,5 +1,4 @@
-addpath(fullfile('paper_data_or_figures','Supplimentary'))
-current_location = pwd;
+close all
 lat_type = upper(input('Would you like to use invariant latitude (Y) or L-shells (N)? ','s'));
 if lat_type ~= 'Y' && lat_type ~= 'N'
     error("Please only use Y or N (N.B: This is case insensitive")
@@ -16,13 +15,25 @@ for i = 1:length(event_timings(:,1))
         case 'Y'
             r = ((6.371e6+(850e3))/(6.371e6));
         	cutoff_latitude = acosd(sqrt(r./cutoff_L_shells));
-            lat_label = "Invariant latitude (/lambda)";
+            lat_label = "Invariant latitude (\lambda)";
             lat_name = "invariant_latitude";
+            lat_title = "invariant latitudes";
         case 'N'
             cutoff_latitude = cutoff_L_shells;
             lat_label = "L-shell (L-value)";
             lat_name = "L_shell";
+            lat_title = "L-shells";
         otherwise
+    end
+    
+    month = num2str(event_timings(i,2));
+    if length(month) == 1
+        month = strcat('0',month);
+    end
+    
+    day = num2str(event_timings(i,3));
+    if length(day) == 1
+        day = strcat('0',day');
     end
     
     figure(i)
@@ -33,10 +44,15 @@ for i = 1:length(event_timings(:,1))
     grid minor
     set(gcf, 'Position', get(0, 'Screensize'))
     set(gca,'FontSize',18,'FontWeight','demi')
-    datetick('x','dd/mm HH:MM','keepticks')
-    xlabel("Date (UT, dd/mm HH:MM)")
+    datetick('x','dd/mm HH','keeplimits','keepticks')
+    xlabel("Date (UT, dd/mm HH)")
     ylabel(lat_label)
-    filename = strcat(num2str(event_timings(i,1)),num2str(event_timings(i,2)),num2str(event_timings(i,3)),lat_name);
-    saveas(gcf,fullfile('paper_data_or_figures','Supplimentary',convertStringsToChars(filename)),'fig');
-    saveas(gcf,fullfile('paper_data_or_figures','Supplimentary',convertStringsToChars(filename)),'png');
+    title(strcat("Cutoff ",lat_title," against time"))
+    xticks = get(gca, 'XTick');
+    yticks = get(gca, 'YTick');
+    text(mean(xticks(1:2)),mean(yticks(1:2)),strcat("From ",num2str(event_timings(i,1)),"/",month,"/",day),'FontSize',15)
+    
+    filename = strcat(num2str(event_timings(i,1)),month,day,lat_name);
+    saveas(gcf,fullfile('paper_data_or_figures','Supplementary',convertStringsToChars(filename)),'fig');
+    saveas(gcf,fullfile('paper_data_or_figures','Supplementary',convertStringsToChars(filename)),'png');
 end
