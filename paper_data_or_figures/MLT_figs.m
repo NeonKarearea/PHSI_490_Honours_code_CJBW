@@ -96,9 +96,28 @@ grid on
 grid minor
 set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi')
-text(datenum(2012,01,23,6,0,0),-1,"From 2012-01-23",'FontSize',15)
+text(datenum(2012,01,23,6,0,0),-1,"From 23/01/2012",'FontSize',15)
 datetick('x','dd/mm HH:MM')
 title("Difference in invariant latitude against time")
-xlabel("Date (UT)")
-ylabel("Delta invariant latitude,(\Delta\lambda)")
+xlabel("Date (UT, dd/mm HH:MM)")
+ylabel("Delta invariant latitude (\Delta\lambda)")
 legend("Dawn MLT","Dayside MLT","Dusk MLT","Nightside MLT")
+
+figure(5)
+hold on
+scatter(cutoff_datenums20120123(cutoff_MLT20120123==1|cutoff_MLT20120123==2),cutoff_invariant_lat20120123(cutoff_MLT20120123==1|cutoff_MLT20120123==2),'LineWidth',2.0)
+scatter(cutoff_datenums20120123(cutoff_MLT20120123==3|cutoff_MLT20120123==4),cutoff_invariant_lat20120123(cutoff_MLT20120123==3|cutoff_MLT20120123==4),'LineWidth',2.0)
+scatter(cutoff_datenums20120123(cutoff_MLT20120123==5|cutoff_MLT20120123==6),cutoff_invariant_lat20120123(cutoff_MLT20120123==5|cutoff_MLT20120123==6),'LineWidth',2.0)
+scatter(cutoff_datenums20120123(cutoff_MLT20120123==7|cutoff_MLT20120123==0),cutoff_invariant_lat20120123(cutoff_MLT20120123==7|cutoff_MLT20120123==0),'LineWidth',2.0)
+plot(datenum(2012,01,24,0,907,0).*ones(1,16),55:1:70,'--k','Linewidth',2.0)
+grid on
+grid minor
+set(gcf, 'Position', get(0, 'Screensize'));
+set(gca,'FontSize',18,'FontWeight','Demi')
+text(datenum(2012,01,23,6,0,0),57,"From 23/01/2012",'FontSize',15)
+xlim([datenum(2012,01,23),datenum(2012,01,27)])
+datetick('x','dd/mm HH:MM','keepticks')
+title("Cutoff latitude against time")
+xlabel("Date (UT, dd/mm HH:MM)")
+ylabel("Invariant latitude (\lambda)")
+legend("Dawn MLT","Dayside MLT","Dusk MLT","Nightside MLT","CME impact")

@@ -26,9 +26,9 @@ function [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q] = event_determine(start_date,end_da
     end
     
     if ~exist('event','var')
-        disp(start_date)
-        disp(end_date)
-        disp(satellite)
+        disp(datevec(start_date))
+        disp(datevec(end_date))
+        error("There was no satellite in this event range. Please make sure that you have the necessary data and that the date range is correct.")
     end
     %This formats the time into datenum.
     event_datenum = datenum(double(event.year),1,...

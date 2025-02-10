@@ -102,8 +102,8 @@ legend("Dawn cutoffs","Dusk cutoffs","CME impact")
 
 figure(5)
 hold on
-scatter(cutoff_datenums(cutoff_MLT>=45 & cutoff_MLT<=135),cutoff_invariant_lat(cutoff_MLT>=45 & cutoff_MLT<=135),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
-scatter(cutoff_datenums(cutoff_MLT>=225 & cutoff_MLT<=315),cutoff_invariant_lat(cutoff_MLT>=225 & cutoff_MLT<=315),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
 ylabel("Invariant latitude (\lambda)")
 text(datenum(2012,01,23,06,0,0),57,"From 23/01/2012",'FontSize',15)
 yyaxis("right")
@@ -124,8 +124,8 @@ legend("Dawn cutoffs","Dusk cutoffs","D_{st}")
 
 figure(6)
 hold on
-scatter(cutoff_datenums(cutoff_MLT>=45 & cutoff_MLT<=135),cutoff_invariant_lat(cutoff_MLT>=45 & cutoff_MLT<=135),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
-scatter(cutoff_datenums(cutoff_MLT>=225 & cutoff_MLT<=315),cutoff_invariant_lat(cutoff_MLT>=225 & cutoff_MLT<=315),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
 ylabel("Invariant latitude (\lambda)")
 text(datenum(2012,01,23,06,0,0),57,"From 23/01/2012",'FontSize',15)
 yyaxis("right")
