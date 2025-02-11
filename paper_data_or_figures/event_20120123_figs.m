@@ -2,6 +2,25 @@ clear all %#ok<CLALL>
 close all
 load('2012-01-23_event_dataset.mat')
 
+lat_answer = input('Would you like to use invariant latitude (Y) or L-shell (N)? ','s');
+if upper(lat_answer) == 'Y'
+    cutoff_latitude = cutoff_invariant_lat;
+    cutoff_latitude_neal = cutoff_invariant_lat_neal;
+    cutoff_latitude_no_noise = cutoff_invariant_lat_no_noise;
+    lat_label = "Invariant latitude (\lambda)";
+    lat_name = "invariant latitudes";
+    lat_lim = [50,80];
+elseif upper(lat_answer) == 'N'
+    cutoff_latitude = cutoff_L_shells;
+    cutoff_latitude_neal = cutoff_L_shells_neal;
+    cutoff_latitude_no_noise = cutoff_L_shells_no_noise;
+    lat_label = "L-shells (L-value)";
+    lat_name = "L-shells";
+    lat_lim = [0,10];
+else
+    error("Please only use Y or N (Note that this is not case sensitive)")
+end
+
 figure(1)
 plot(L_shells{125},abs(del_flux),'LineWidth',2.0)
 grid on
@@ -64,10 +83,10 @@ legend("Proton flux")
 
 figure(3)
 hold on
-scatter(cutoff_datenums_neal,cutoff_invariant_lat_neal,'LineWidth',1.5)
-scatter(cutoff_datenums_no_noise,cutoff_invariant_lat_no_noise,'LineWidth',1.5)
-ylabel("Invariant latitude (\lambda)")
-ylim([50,80])
+scatter(cutoff_datenums_neal,cutoff_latitude_neal,'LineWidth',1.5)
+scatter(cutoff_datenums_no_noise,cutoff_latitude_no_noise,'LineWidth',1.5)
+ylabel(lat_label)
+ylim(lat_lim)
 text(datenum(2012,01,23,06,0,0),51,"From 23/01/2012",'FontSize',15)
 yyaxis('right')
 plot(cutoff_datenums,original_cutoff_fluxes,'LineWidth',2.0)
@@ -78,36 +97,19 @@ set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi','YScale','log')
 set(gca,'YColor','k')
 datetick('x','dd/mm HH','keepticks')
-title("Cutoff invariant latitudes and fluxes against time")
+title(strcat("Cutoff ",lat_name," and fluxes against time"))
 xlabel("Date (UT, dd/mm HH)")
 ylabel("Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("Neal cutoffs","New cutoffs","Cutoff flux",'Location','northeastoutside')
 
 figure(4)
 hold on
-scatter(cutoff_datenums(cutoff_MLT>=45 & cutoff_MLT<=135),cutoff_invariant_lat(cutoff_MLT>=45 & cutoff_MLT<=135),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
-scatter(cutoff_datenums(cutoff_MLT>=225 & cutoff_MLT<=315),cutoff_invariant_lat(cutoff_MLT>=225 & cutoff_MLT<=315),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
-plot(datenum(2012,01,24,0,907,0).*ones(1,15),56:70,"k--",'LineWidth',2.0)
-text(datenum(2012,01,23,06,0,0),57,"From 23/01/2012",'FontSize',15)
-xlim([datenum(2012,01,23,0,0,0),datenum(2012,01,27,0,0,0)])
-grid on
-grid minor
-set(gcf, 'Position', get(0, 'Screensize'));
-set(gca,'FontSize',18,'FontWeight','Demi')
-datetick('x','dd/mm HH:MM','keepticks')
-title("Cutoff invariant latitude against time")
-xlabel("Date (UT)")
-ylabel("Invariant latitude (\lambda)")
-legend("Dawn cutoffs","Dusk cutoffs","CME impact")
-
-figure(5)
-hold on
-scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
-scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
-ylabel("Invariant latitude (\lambda)")
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5)
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5)
+ylabel(lat_label)
 text(datenum(2012,01,23,06,0,0),57,"From 23/01/2012",'FontSize',15)
 yyaxis("right")
-plot(cutoff_datenums,cutoff_dst,'-o','LineWidth',2.0,'Color',[1, 0, 0])
+plot(cutoff_datenums,cutoff_dst,'-o','LineWidth',2.0)
 plot(datenum(2012,01,24,0,907,0).*ones(1,201),-100:100,"k--",'LineWidth',2.0)
 ylim([-100,100])
 xlim([datenum(2012,01,23,0,0,0),datenum(2012,01,27,0,0,0)])
@@ -117,19 +119,19 @@ set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi')
 set(gca,'YColor','k')
 datetick('x','dd/mm HH','keepticks')
-title("Cutoff invariant latitude and D_{st} against time")
+title(strcat("Cutoff ",lat_name," and D_{st} against time"))
 xlabel("Date (UT, dd/mm HH)")
 ylabel("D_{st} (nT)",'Color',[0 0 0])
-legend("Dawn cutoffs","Dusk cutoffs","D_{st}")
+legend("Nightside cutoffs","Dayside cutoffs","D_{st}")
 
-figure(6)
+figure(5)
 hold on
-scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_invariant_lat(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5,'MarkerEdgeColor',[0 0.4470 0.7410])
-scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_invariant_lat(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5,'MarkerEdgeColor',[0.9290 0.6940 0.1250])
-ylabel("Invariant latitude (\lambda)")
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5)
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',1.5)
+ylabel(lat_label)
 text(datenum(2012,01,23,06,0,0),57,"From 23/01/2012",'FontSize',15)
 yyaxis("right")
-plot(cutoff_datenums,-1.*cutoff_kp,'-o','LineWidth',2.0,'Color',[1 0 0])
+plot(cutoff_datenums,-1.*cutoff_kp,'-o','LineWidth',2.0)
 plot(datenum(2012,01,24,0,907,0).*ones(1,13),-6:6,"k--",'LineWidth',2.0)
 ylim([-6,6])
 xlim([datenum(2012,01,23,0,0,0),datenum(2012,01,27,0,0,0)])
@@ -139,7 +141,7 @@ set(gcf, 'Position', get(0, 'Screensize'));
 set(gca,'FontSize',18,'FontWeight','Demi')
 set(gca,'YColor','k')
 datetick('x','dd/mm HH','keepticks')
-title("Cutoff invariant latitudes and K_{p} against time")
+title(strcat("Cutoff ",lat_name," and K_{p} against time"))
 xlabel("Date (UT, dd/mm HH)")
 ylabel("K_{p} (-K value)",'Color',[0 0 0])
 legend("Dawn cutoffs","Dusk cutoffs","K_{p}","CME impact")
