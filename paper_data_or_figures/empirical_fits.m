@@ -1,4 +1,7 @@
 close all
+%Just a quick note about the data that needs to be used: To make sure that
+%the Kp doesn't blow up when interpolating, the previous Kp value needs to
+%be put in as well. The code will take care of the rest.
 
 data_answer = input('Do you want to use all events (Y) or just those before 2007 (N)?: ','s');
 if isempty(data_answer)
@@ -64,24 +67,24 @@ symh_day_p6 = nlinfit(cutoff_symh_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff
 
 %This is for using two parameters. Note that we will have to use an
 %adjusted R^2 value due to adding more parameters.
-combined_gen_equa = @(p,xn) (p(1).*quadratic(kp_gen_p6,xn(1,:))+p(2).*exponential(dst_gen_p6,xn(2,:)));
-combined_night_equa = @(p,xn) (p(1).*quadratic(kp_night_p6,xn(1,:))+p(2).*exponential(dst_night_p6,xn(2,:)));
-combined_day_equa = @(p,xn) (p(1).*quadratic(kp_day_p6,xn(1,:))+p(2).*exponential(dst_day_p6,xn(2,:)));
-combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+(p(3).*xm(2,:).^2)+p(4).*xm(2,:)+p(5);
+combined_gen_equa = @(p,xn) (p(1).*quadratic(kp_gen_p6,xn(1,:))+p(2).*dst_temporal(dst_temporal_gen_p6,xn(2:3,:)));
+combined_night_equa = @(p,xn) (p(1).*quadratic(kp_night_p6,xn(1,:))+p(2).*dst_temporal(dst_temporal_night_p6,xn(2:3,:)));
+combined_day_equa = @(p,xn) (p(1).*quadratic(kp_day_p6,xn(1,:))+p(2).*dst_temporal(dst_temporal_day_p6,xn(2:3,:)));
+combined = @(p,xm)(p(1).*xm(1,:).^2)+(p(2).*xm(1,:))+(p(3).*xm(2,:).^2)+p(4).*xm(2,:)+p(5).*xm(3,:)+p(6);
 
-combined_form_gen_p6 = nlinfit([cutoff_kp_p6;cutoff_dst_p6],cutoff_latitude_p6,combined,[0,0,0,0,0],'Options',opts);
-combined_form_night_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270)],cutoff_latitude_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270),combined,[0,0,0,0,0],'Options',opts);
-combined_form_day_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined,[0,0,0,0,0],'Options',opts);
+combined_form_gen_p6 = nlinfit([cutoff_kp_p6;cutoff_dst_p6;cutoff_delta_dst_p6],cutoff_latitude_p6,combined,[0,0,0,0,0,0],'Options',opts);
+combined_form_night_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_delta_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270)],cutoff_latitude_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270),combined,[0,0,0,0,0,0],'Options',opts);
+combined_form_day_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_delta_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined,[0,0,0,0,0,0],'Options',opts);
 
-combined_equa_gen_p6 = nlinfit([cutoff_kp_p6;cutoff_dst_p6],cutoff_latitude_p6,combined_gen_equa,[0,0],'Options',opts);
-combined_equa_night_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270)],cutoff_latitude_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270),combined_night_equa,[0,0],'Options',opts);
-combined_equa_day_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined_day_equa,[0,0],'Options',opts);
+combined_equa_gen_p6 = nlinfit([cutoff_kp_p6;cutoff_dst_p6;cutoff_delta_dst_p6],cutoff_latitude_p6,combined_gen_equa,[0,0],'Options',opts);
+combined_equa_night_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270);cutoff_delta_dst_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270)],cutoff_latitude_p6(cutoff_MLT_p6<=90|cutoff_MLT_p6>=270),combined_night_equa,[0,0],'Options',opts);
+combined_equa_day_p6 = nlinfit([cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270);cutoff_delta_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270)],cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<=270),combined_day_equa,[0,0],'Options',opts);
 
 dst_range = -400:1:50;
 ae_range = linspace(0,3500,451);
 kp_range = linspace(0,9,451);
 
-kp_interp = NaN.*ones(size(dst_20120123_event));
+kp_interp = NaN.*ones(1,(length(dst_20120123_event)+3));
 for i = 1:length(kp_20120123_event)
     kp_interp(3*(i-1)+1) = kp_20120123_event(i);
 end
@@ -180,13 +183,13 @@ figure(5)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(kp_time_range,quadratic(kp_day_p6,kp_20120123_event),'LineWidth',2.0)
-plot(kp_time_range,quadratic(kp_gen_p6,kp_20120123_event),'LineWidth',2.0)
-plot(kp_time_range,quadratic(kp_night_p6,kp_20120123_event),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_day_p6,kp_20120123_event(2:end)),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_gen_p6,kp_20120123_event(2:end)),'LineWidth',2.0)
+plot(kp_time_range,quadratic(kp_night_p6,kp_20120123_event(2:end)),'LineWidth',2.0)
 if upper(lat_answer) == 'Y'
-    plot(kp_time_range,((-0.057912.*((kp_20120123_event).^2))-0.38237.*kp_20120123_event+63.1626),'k','LineWidth',2.0)
+    plot(kp_time_range,((-0.057912.*((kp_20120123_event(2:end)).^2))-0.38237.*kp_20120123_event(2:end)+63.1626),'k','LineWidth',2.0)
 else
-    plot(kp_time_range,(r./((cosd((-0.057912.*((kp_20120123_event).^2))-0.38237.*kp_20120123_event+63.1626)).^2)),'k','LineWidth',2.0)
+    plot(kp_time_range,(r./((cosd((-0.057912.*((kp_20120123_event(2:end)).^2))-0.38237.*kp_20120123_event(2:end)+63.1626)).^2)),'k','LineWidth',2.0)
 end
 x_ticks = get(gca,'XTick');
 y_ticks = get(gca,'YTick');
@@ -221,9 +224,9 @@ figure(7)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_day_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_gen_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_night_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_day_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_gen_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_night_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
 if upper(lat_answer) == 'Y'
     plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 else
@@ -248,9 +251,9 @@ figure(8)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(dst_time_range,combined_day_equa(combined_equa_day_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
-plot(dst_time_range,combined_gen_equa(combined_equa_gen_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
-plot(dst_time_range,combined_night_equa(combined_equa_night_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined_day_equa(combined_equa_day_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined_gen_equa(combined_equa_gen_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined_night_equa(combined_equa_night_p6,[kp_interp(3:end-1);dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
 if upper(lat_answer) == 'Y'
     plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 else
@@ -293,7 +296,7 @@ set(gcf, 'Position', get(0, 'Screensize'))
 set(gca,'FontSize',18,'FontWeight','Demi')
 datetick('x','dd/mm HH:MM','keepticks')
 xlim([datenum(2012,01,23),datenum(2012,01,27)])
-title(strcat("Cutoff ",lat_type," for the D_{st} fits"))
+title(strcat("Cutoff ",lat_type," for the D_{st} + Delta D_{st} fits"))
 xlabel("Date (UT, dd/mm HH:MM)")
 ylabel(lat_label)
 legend("Empirically derived nightside cutoff latitudes","Empirically derived dayside cutoff latitudes","Dayside D_{st} fit","General D_{st} fit","Nightside D_{st} fit","Neal D_{st} fit")
