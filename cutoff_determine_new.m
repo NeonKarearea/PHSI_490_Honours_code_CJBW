@@ -1,4 +1,4 @@
-function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,symh,ae,...
+function [a,b,c,d,e,f,g,h,i,j,k,l,m] = cutoff_determine_new(L_shell,flux,MLT,dst,kp,symh,ae,...
     geograph_lat,geograph_lon,geomag_lat,geomag_lon,...
     m,num_grad,min_flux,min_avg_flux)
     %This will determine the cutoff flux and the difference between the cutoff and actual flux, and attemps to find the correct cutoff latitiudes and fluxes.
@@ -61,6 +61,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
         true_L = NaN;
         true_MLT = NaN;
         true_dst = NaN;
+        true_delta_dst = NaN;
         true_kp = NaN;
         true_symh = NaN;
         true_ae = NaN;
@@ -169,11 +170,11 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
                     true_geomag_lat = geomag_lat(int64(location));
                     true_geomag_lon = geomag_lon(int64(location));
                     
-                    %try
-                    %    true_delta_dst = dst(int64(location))-dst(int64(location)-3600);
-                    %catch
-                    %    true_delta_dst = dst(int64(location))-dst(1);
-                    %end
+                    try
+                        true_delta_dst = dst(int64(location))-dst(int64(location)-3600);
+                    catch
+                        true_delta_dst = dst(int64(location))-dst(1);
+                    end
                     
                     break
                 else
@@ -192,6 +193,7 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
         true_L = NaN;
         true_MLT = NaN;
         true_dst = NaN;
+        true_delta_dst = NaN;
         true_kp = NaN;
         true_symh = NaN;
         true_ae = NaN;
@@ -205,11 +207,12 @@ function [a,b,c,d,e,f,g,h,i,j,k,l] = cutoff_determine_new(L_shell,flux,MLT,dst,k
     c = true_L;
     d = true_MLT;
     e = true_dst;
-    f = true_kp;
-    g = true_symh;
-    h = true_ae;
-    i = true_geograph_lat;
-    j = true_geograph_lon;
-    k = true_geomag_lat;
-    l = true_geomag_lon;
+    f = true_delta_dst;
+    g = true_kp;
+    h = true_symh;
+    i = true_ae;
+    j = true_geograph_lat;
+    k = true_geograph_lon;
+    l = true_geomag_lat;
+    m = true_geomag_lon;
 end

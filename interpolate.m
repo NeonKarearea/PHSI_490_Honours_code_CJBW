@@ -141,8 +141,8 @@ function interpolate(satellite)
             date_data.fofl_geomagnetic_latitude = (interp_geomag_lat(start_point:end_point)');
             date_data.fofl_geomag_longitude = (interp_geomag_lon(start_point:end_point)');
             date_data.fofl_magnetic_local_time = (interp_MLT(start_point:end_point)');
-            date_data.dst = dst(start_time:(end_point+start_time-start_point));
-            date_data.kp = kp(start_time:(end_point+start_time-start_point));
+            date_data.dst = dst(start_point:end_point);
+            date_data.kp = kp(start_point:end_point);
             date_data.symh = symh(start_time:(end_point+start_time-start_point));
             date_data.ae = ae(start_time:(end_point+start_time-start_point));
         end        

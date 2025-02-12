@@ -38,6 +38,7 @@ end
 
 exponential = @(p,x)exp(p(1).*x+p(2))+p(3);
 quadratic = @(p,x)(p(1).*(x.^2))+(p(2).*x)+p(3);
+dst_temporal = @(p,xm)exp(p(1).*xm(1,:)+p(2))+p(3).*xm(2,:)+p(4);
 opts = statset('MaxIter',1e5);
 
 %This is for the 'normal' fits
@@ -48,6 +49,10 @@ ae_day_p6 = nlinfit(cutoff_ae_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_lat
 dst_gen_p6 = nlinfit(cutoff_dst_p6,cutoff_latitude_p6,exponential,[0,0,0]);
 dst_night_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_latitude_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),exponential,[0,0,0]);
 dst_day_p6 = nlinfit(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),exponential,[0,0,0]);
+
+dst_temporal_gen_p6 = nlinfit([cutoff_dst_p6;cutoff_delta_dst_p6],cutoff_latitude_p6,dst_temporal,[0,0,0,0]);
+dst_temporal_night_p6 = nlinfit([cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270);cutoff_delta_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270)],cutoff_latitude_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),dst_temporal,[0,0,0,0]);
+dst_temporal_day_p6 = nlinfit([cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270);cutoff_delta_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270)],cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),dst_temporal,[0,0,0,0]);
 
 kp_gen_p6 = nlinfit(cutoff_kp_p6,cutoff_latitude_p6,quadratic,[0,0,0]);
 kp_night_p6 = nlinfit(cutoff_kp_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_latitude_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),quadratic,[0,0,0]);
@@ -83,7 +88,7 @@ end
 
 x = 1:length(kp_interp);
 idx = ~isnan(kp_interp);
-kp_interp = (interp1(x(idx),kp_interp(idx),x,'spline')');
+kp_interp = (interp1(x(idx),kp_interp(idx),x,'spline'));
 
 figure(1)
 hold on
@@ -216,9 +221,9 @@ figure(7)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_day_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_gen_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
-plot(dst_time_range,combined(combined_form_night_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_day_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_gen_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined(combined_form_night_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
 if upper(lat_answer) == 'Y'
     plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 else
@@ -243,9 +248,9 @@ figure(8)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
 scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
-plot(dst_time_range,combined_day_equa(combined_equa_day_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
-plot(dst_time_range,combined_gen_equa(combined_equa_gen_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
-plot(dst_time_range,combined_night_equa(combined_equa_night_p6,[kp_interp';dst_20120123_event']),'LineWidth',2.0)
+plot(dst_time_range,combined_day_equa(combined_equa_day_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined_gen_equa(combined_equa_gen_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,combined_night_equa(combined_equa_night_p6,[kp_interp;dst_20120123_event]),'LineWidth',2.0)
 if upper(lat_answer) == 'Y'
     plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
 else
@@ -268,14 +273,42 @@ legend("Epmirically derived nightside cutoff latitudes","Empirically derived day
 
 figure(9)
 hold on
+scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',2.0)
+scatter(cutoff_datenums(cutoff_MLT>=90 & cutoff_MLT<=270),cutoff_latitude(cutoff_MLT>=90 & cutoff_MLT<=270),'LineWidth',2.0)
+plot(dst_time_range,dst_temporal(dst_temporal_day_p6,[dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,dst_temporal(dst_temporal_gen_p6,[dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+plot(dst_time_range,dst_temporal(dst_temporal_night_p6,[dst_20120123_event;delta_dst_20120123_event]),'LineWidth',2.0)
+if upper(lat_answer) == 'Y'
+    plot(dst_time_range,((0.031679.*dst_20120123_event)+62.5344),'k','LineWidth',2.0)
+else
+    plot(dst_time_range,(r./((cosd((0.031679.*dst_20120123_event)+62.5344)).^2)),'k','LineWidth',2.0)
+end
+x_ticks = get(gca,'XTick');
+y_ticks = get(gca,'YTick');
+plot(datenum(2012,01,24,0,907,0).*ones(1,length(y_ticks)),y_ticks,"k--",'LineWidth',2.0)
+text(mean(x_ticks(1:2)),mean(y_ticks(1:2)),"From 23/01/2012",'FontSize',15)
 grid on
 grid minor
-scatter3(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_kp_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_latitude_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),'LineWidth',2.0)
-scatter3(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),'LineWidth',2.0)
-xlabel("D_{st} (nT)")
-ylabel("K_{p} (K-value)")
-zlabel("Invariant latitude (\lambda)")
-title("Cutoff D_{st} and cutoff K_{p} against cutoff invariant latitudes")
-legend("Nightside cutoffs","Dayside cutoffs")
 set(gcf, 'Position', get(0, 'Screensize'))
 set(gca,'FontSize',18,'FontWeight','Demi')
+datetick('x','dd/mm HH:MM','keepticks')
+xlim([datenum(2012,01,23),datenum(2012,01,27)])
+title(strcat("Cutoff ",lat_type," for the D_{st} fits"))
+xlabel("Date (UT, dd/mm HH:MM)")
+ylabel(lat_label)
+legend("Empirically derived nightside cutoff latitudes","Empirically derived dayside cutoff latitudes","Dayside D_{st} fit","General D_{st} fit","Nightside D_{st} fit","Neal D_{st} fit")
+
+
+% figure(9)
+% hold on
+% grid on
+% grid minor
+% scatter3(cutoff_dst_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_kp_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),cutoff_latitude_p6(cutoff_MLT_p6<90|cutoff_MLT_p6>=270),'LineWidth',2.0)
+% scatter3(cutoff_dst_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_kp_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),cutoff_latitude_p6(cutoff_MLT_p6>=90&cutoff_MLT_p6<270),'LineWidth',2.0)
+% xlabel("D_{st} (nT)")
+% ylabel("K_{p} (K-value)")
+% zlabel("Invariant latitude (\lambda)")
+% title("Cutoff D_{st} and cutoff K_{p} against cutoff invariant latitudes")
+% legend("Nightside cutoffs","Dayside cutoffs")
+% set(gcf, 'Position', get(0, 'Screensize'))
+%set(gca,'FontSize',18,'FontWeight','Demi')
