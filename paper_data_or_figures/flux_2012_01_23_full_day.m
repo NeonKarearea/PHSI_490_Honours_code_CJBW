@@ -1,7 +1,10 @@
 clear all %#ok<CLALL>
 close all
 
+%This makes the first two figures.
+
 load('poes_n19_20120123.mat')
+%FIGURE 1
 figure(1)
 hold on
 plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),Omni_directional_P6(1:8:end),'r','LineWidth',1.25)
@@ -24,6 +27,7 @@ xlabel("Time on 23/01/2012 (UT)")
 ylabel("Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("Omnidirection P6 detector","Omnidirectional P7 detector","Omnidirectional P8 detector")
 
+%FIGURE 2
 figure(2)
 hold on
 plot(datenum(year(1:8:end),1,day_of_year(1:8:end),hour(1:8:end),minute(1:8:end),second(1:8:end)),Omni_directional_P6(1:8:end),'r','LineWidth',1.25)

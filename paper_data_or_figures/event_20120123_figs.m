@@ -1,5 +1,8 @@
 clear all %#ok<CLALL>
 close all
+
+%This one makes figures related to the 2012-01-23 event before we do any
+%fitting.
 load('2012-01-23_event_dataset.mat')
 
 lat_answer = input('Would you like to use invariant latitude (Y) or L-shell (N)? ','s');
@@ -21,6 +24,7 @@ else
     error("Please only use Y or N (Note that this is not case sensitive)")
 end
 
+%FIGURE 1
 figure(1)
 plot(L_shells{125},abs(del_flux),'LineWidth',2.0)
 grid on
@@ -61,6 +65,7 @@ annotation('textbox',...
     'FontWeight','bold');
 xlim([3.5,5.5])
 
+%FIGURE 2
 figure(2)
 hold on
 plot(L_shells{125},fluxes{125},'LineWidth',2.0)
@@ -81,6 +86,7 @@ xlabel("L-shells (L-value)")
 ylabel("Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("Proton flux")
 
+%FIGURE 3
 figure(3)
 hold on
 scatter(cutoff_datenums_neal,cutoff_latitude_neal,'LineWidth',1.5)
@@ -102,6 +108,7 @@ xlabel("Date (UT, dd/mm HH)")
 ylabel("Proton flux (protons cm^{-2} s^{-1} sr^{-1})")
 legend("Neal cutoffs","New cutoffs","Cutoff flux",'Location','northeastoutside')
 
+%FIGURE 4
 figure(4)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5)
@@ -124,6 +131,7 @@ xlabel("Date (UT, dd/mm HH)")
 ylabel("D_{st} (nT)",'Color',[0 0 0])
 legend("Nightside cutoffs","Dayside cutoffs","D_{st}")
 
+%FIGURE 5
 figure(5)
 hold on
 scatter(cutoff_datenums(cutoff_MLT<=90 | cutoff_MLT>=270),cutoff_latitude(cutoff_MLT<=90 | cutoff_MLT>=270),'LineWidth',1.5)

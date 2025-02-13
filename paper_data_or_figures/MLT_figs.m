@@ -1,6 +1,9 @@
 clear all %#ok<CLALL>
 close all
 
+%This one makes the figures that directly relate to MLT. Note that there is
+%an extra one in here.
+
 load('MLT_data.mat')
 
 lat_answer = input('Would you like to use invariant latitude (Y) or L-shell (N)? ','s');
